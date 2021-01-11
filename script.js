@@ -108,12 +108,12 @@ function on_pointer_hold_rudder() {
 }
 
 function on_mouse_move_rudder(event) {
-    let rudder = ((event.clientX * (90 - (-90))) / (rudderElement.clientWidth)) + (-90);
+    let rudder = Math.round(((event.clientX * (90 - (-90))) / (rudderElement.clientWidth)) + (-90));
     hoverControl.setRudder(rudder);
 }
 
 function on_touch_move_rudder(touch) {
-    let rudder = ((touch.touches[0].clientX * (90 - (-90))) / (rudderElement.clientWidth)) + (-90);
+    let rudder = Math.round(((touch.touches[0].clientX * (90 - (-90))) / (rudderElement.clientWidth)) + (-90));
     hoverControl.setRudder(rudder);
 }
 
@@ -213,15 +213,31 @@ document.getElementById("btn_connect").onclick = async () => {
         }
 
         if (services.uartService) {
-            services.uartService.addEventListener("receiveText", eventHandler);
+            services.uartService.addEventListener("receiveText", (event) => {
+                var elm = document.querySelector(".ping i");
+                var newone = elm.cloneNode(true);
+                elm.parentNode.replaceChild(newone, elm);
 
-            document.getElementById("btn_arm").onclick = async() => {
-                await services.uartService.sendText("A1:");
-            }
+                document.querySelector(".battery-status").innerHTML = event.detail + "mV";
+                // console.log(event);
+            });
 
-            document.getElementById("btn_disarm").onclick = async() => {
-                await services.uartService.sendText("A0:");
-            }
+            let sendCommands = setInterval(async() => {
+                if (device) {
+                    if (device.gatt.connected) {
+                        let command =
+                            "T" + hoverControl.getThrottle() +
+                            "R" + hoverControl.getRudder() +
+                            "A" + (hoverControl.getArm() ? "1" : "0") +
+                            "S0" +  // Sending this one because my decoding-code is a bit buggy currently.
+                            ":";
+                        console.log(command);
+                        await services.uartService.sendText(command);
+                    } else {
+                        clearInterval(sendCommands)
+                    }
+                }
+            }, 50);
 
         }
     }

@@ -67,6 +67,28 @@ body {
     color: #008000;
 }
 
+.ping {
+    display: none;
+}
+
+.connected .ping {
+    display: block;
+    margin-left: 5px;
+    color: #4a4a4a;
+}
+
+.ping i {
+    -webkit-animation: ping-fade-out 2s forwards; /* Safari 4+ */
+    -moz-animation:    ping-fade-out 2s forwards; /* Fx 2+ */
+    -o-animation:      ping-fade-out 2s forwards; /* Opera 12+ */
+    animation:         ping-fade-out 2s forwards; /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes ping-fade-out {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 .options {
     position: absolute;
     display: flex;
