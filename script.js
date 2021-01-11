@@ -1,5 +1,5 @@
 if (navigator.serviceWorker) {
-    navigator.serviceWorker.register('/hoverbit-ble/sw.js', {scope: '/hoverbit-ble/'})
+    navigator.serviceWorker.register('/hoverbit-ble/sw.js', {scope: '/hoverbit-ble/'});
 }
 
 let StickyControls = false;
