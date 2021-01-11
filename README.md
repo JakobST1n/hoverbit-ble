@@ -1,7 +1,7 @@
 # HOVER:BIT Bluetooth Controller software
+This is software for controlling the HOVER:BIT kit with a progressive web app.
 
-
-
+The web app lives in the `controller` branch, it uses the [micro:bit Web Bluetooth](https://github.com/thegecko/microbit-web-bluetooth) library.
 
 ## Usage
 First you need to flash your micro:bit with the hex-file on the releases-page, or you can
