@@ -58,7 +58,7 @@ void onConnected(MicroBitEvent) {
         int startI = 1;
         for (int i = 1; i < length; i++) {
             cChar = command[i];
-            if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S' || cChar == ':') {
+            if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S' || i >= length-1) {
                 int valLength = i - startI;
                 char val[valLength];
                 for (int o = 0; o < valLength; o++) {
