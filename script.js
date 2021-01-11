@@ -1,5 +1,8 @@
-let StickyControls = false;
+if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('/hoverbit-ble/sw.js', {scope: '/hoverbit-ble/'})
+}
 
+let StickyControls = false;
 let throttleElement = document.querySelector(".throttle");
 let rudderElement = document.querySelector(".rudder");
 
