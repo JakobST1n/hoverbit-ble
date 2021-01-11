@@ -43,7 +43,6 @@ DisplayMainScreenMode displayMainScreenMode = GRAPHS;
 
 void onConnected(MicroBitEvent) {
     bConnected = 1;
-    uBit.audio.setVolume(255);
     uBit.audio.soundExpressions.play(ManagedString("giggle"));
 
     // mobile app will send ASCII strings terminated with the colon character
@@ -51,31 +50,35 @@ void onConnected(MicroBitEvent) {
 
     while (bConnected) {
         ManagedString msg = uart->readUntil(eom);
-        char command = msg.substring(0, 1).toCharArray()[0];
-        int value = atoi(msg.substring(1, msg.length() - 1).toCharArray());
+        int length = msg.length();
+        const char* command = msg.toCharArray();
 
-        if (command == 'R') {
-            controller.Roll(value);
-            if (displayMainScreenMode == OFF) {
-                uBit.display.scroll(controller.Roll());
+        char cCommand = command[0];
+        char cChar;
+        int startI = 1;
+        for (int i = 1; i < length; i++) {
+            cChar = command[i];
+            if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S' || cChar == ':') {
+                int valLength = i - startI;
+                char val[valLength];
+                for (int o = 0; o < valLength; o++) {
+                    val[o] = command[startI + o];
+                }
+                int value = atoi(val);
+
+                if (cCommand == 'R') {
+                    controller.Roll(value);
+                } else if (cCommand == 'T') {
+                    controller.Throttle(value);
+                } else if (cCommand == 'A') {
+                    controller.Arm(value == 1);
+                } else if (cCommand == 'S') {
+                    controller.Servo1(value);
+                }
+
+                cCommand = cChar;
+                startI = i+1;
             }
-        } else if (command == 'T') {
-            controller.Throttle(value);
-            if (displayMainScreenMode == OFF) {
-                uBit.display.scroll(controller.Throttle());
-            }
-        } else if (command == 'A') {
-            controller.Arm(value == 1);
-            if (displayMainScreenMode == OFF) {
-                uBit.display.scroll(controller.Arm());
-            }
-        } else if (command == 'S') {
-            controller.Servo1(value);
-            if (displayMainScreenMode == OFF) {
-                uBit.display.scroll(controller.Servo1());
-            }
-        } else {
-            uBit.display.scroll(command);
         }
     }
 
@@ -170,9 +173,10 @@ void nextMainScreenDisplayMode() {
 }
 
 void mainScreen() {
-    // uBit.display.clear();
     bool bDelayElapsed = (uBit.systemTime() - tmpTimer) > 1000;
     if (bDelayElapsed) { tmpTimer = uBit.systemTime(); }
+
+    if (bDelayElapsed && bConnected) { uart->send(batteryMilliVolt); }
 
     switch (displayMainScreenMode) {
         case OFF:
@@ -207,14 +211,13 @@ void mainScreen() {
 }
 
 void onButtonA_press(MicroBitEvent e) {
-    controller.Roll(controller.Roll() + 3);
 }
 void onButtonB_press(MicroBitEvent e) {
-    controller.Roll(controller.Roll() - 3);
 }
 
 int main() {
     uBit.init();
+    uBit.audio.setVolume(255);
     tmpTimer = uBit.systemTime();
 
     // Setup serial for Spektsat communication with air:bit board
