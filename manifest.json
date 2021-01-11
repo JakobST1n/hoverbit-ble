@@ -4,7 +4,7 @@
 	"name": "HOVERBIT Controller",
 	"short_name": "HOVERBIT BLE",
 	"display": "fullscreen",
-	"start_url": "/microbit-ble/",
+	"start_url": "/hoverbit-ble/",
     "orientation": "landscape",
     "icons": [
 		{
