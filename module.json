@@ -1,0 +1,16 @@
+{
+  "name": "hoverbit-ble",
+  "version": "0.0.1",
+  "description": "HOVER BIT Bluetooth receiver.",
+  "license": "MIT",
+  "dependencies": {
+    "codal-microbit": "git@github.com:lancaster-university/codal-microbit-v2.git#master"
+  },
+  "targetDependencies": {},
+  "extraIncludes": [
+    "inc/",
+    "yotta_modules/"
+  ],
+  "bin": "./source",
+  "scripts": {}
+}
