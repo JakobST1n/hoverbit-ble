@@ -13,3 +13,6 @@ compile it yourself. I have been using the docker image provided by [Lancaster u
     # Build the hex-file
     docker run -v $(pwd):/app --rm microbit-tools
 ```
+
+## Credits
+- Current icon [made by strip](https://www.flaticon.com/authors/srip) from [Flaticon](https://www.flaticon.com/)
