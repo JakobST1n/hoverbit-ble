@@ -1,0 +1,123 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    /* width: 100%;
+    height: 100%; */
+    font-family: monospace;
+    overflow: hidden;
+}
+
+body {
+    margin: 10px;
+}
+
+.info h1 {
+    margin: 0;
+}
+
+.info-device {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.info-device i {
+    font-size: 15px;
+}
+
+.connection {
+    display: flex;
+    align-items: center;
+    color: #c32222;
+}
+
+.connected .connection {
+    color: #008000;
+}
+
+.connection-status {
+    text-transform: uppercase;
+}
+
+.battery {
+    display: none;
+    margin-left: 5px;
+    /* display: flex; */
+    align-items: center;
+    color: #4a4a4a;
+}
+
+.connected .battery {
+    display: flex;
+}
+
+.arm {
+    display: none;
+    margin-left: 5px;
+    /* display: flex; */
+    align-items: center;
+    color: #c32222;
+}
+
+.connected .arm {
+    display: flex;
+}
+
+.arm.armed {
+    color: #008000;
+}
+
+.options {
+    position: absolute;
+    display: flex;
+    bottom: 60px;
+    right: 60px;
+    flex-direction:column-reverse;
+}
+
+.options button {
+    margin-top: 5px;
+    border: 1px solid black;
+    background-color: #b5b5b5;
+    padding: 5px;
+}
+
+.throttle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: calc(100% - 70px);
+
+    margin: 0;
+
+    background-color: #b5b5b5;
+    border: 1px solid black;
+}
+
+.throttle-thumb {
+    width: 40px;
+    height: 1%;
+    position: absolute;
+    bottom: 0;
+    background-color: green;
+}
+
+.rudder {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: calc(100% - 70px);
+    height: 40px;
+    margin: 0;
+    background-color: #b5b5b5;
+    border: 1px solid black;
+}
+
+.rudder-thumb {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    height: 40px;
+    background-color: yellow;
+}
