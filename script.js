@@ -189,8 +189,10 @@ document.getElementById("btn_connect").onclick = async () => {
                 document.querySelector(".info-device").classList.remove("connected");
                 document.querySelector(".connection-status").innerHTML = "DISCONNECTED";
                 clearInterval(connCheckInterval);
+                device.gatt.disconnect();
             }
         } else {
+            clearInterval(connCheckInterval);
             alert("FATAL ERROR, Please reload page...");
             clearInterval(connCheckInterval);
         }
@@ -232,12 +234,11 @@ document.getElementById("btn_connect").onclick = async () => {
                             "T" + hoverControl.getThrottle() +
                             "R" + hoverControl.getRudder() +
                             "A" + (hoverControl.getArm() ? "1" : "0") +
-                            "S0" +  // Sending this one because my decoding-code is a bit buggy currently.
                             ":";
-                        console.log(command);
                         await services.uartService.sendText(command);
                     } else {
-                        clearInterval(sendCommands)
+                        clearInterval(sendCommands);
+                        device.gatt.disconnect();
                     }
                 }
             }, 50);
