@@ -231,9 +231,10 @@ document.getElementById("btn_connect").onclick = async () => {
                 if (device) {
                     if (device.gatt.connected) {
                         let command =
-                            "T" + hoverControl.getThrottle() +
-                            "R" + hoverControl.getRudder() +
+                            "T" + hoverControl.getThrottle().toString() +
+                            "R" + hoverControl.getRudder().toString() +
                             "A" + (hoverControl.getArm() ? "1" : "0") +
+                            "S0" +
                             ":";
                         await services.uartService.sendText(command);
                     } else {
@@ -241,7 +242,7 @@ document.getElementById("btn_connect").onclick = async () => {
                         device.gatt.disconnect();
                     }
                 }
-            }, 50);
+            }, 70);
 
         }
     }
