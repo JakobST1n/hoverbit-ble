@@ -56,15 +56,26 @@ void onConnected(MicroBitEvent) {
         char cCommand = command[0];
         char cChar;
         int startI = 1;
+        bool bEOC = false;
+        int valLength = 0;
+
         for (int i = 1; i < length; i++) {
             cChar = command[i];
-            if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S' || i >= length-1) {
-                int valLength = i - startI;
-                char val[valLength];
-                for (int o = 0; o < valLength; o++) {
-                    val[o] = command[startI + o];
-                }
-                int value = atoi(val);
+
+            if (i >= length - 1) {
+                bEOC = true;
+                valLength = i - startI + 1;
+            } else if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S') {
+                bEOC = true;
+                valLength = i - startI;
+            }
+
+            if (bEOC) {
+                // char val[valLength];
+                // for (int o = 0; o < valLength; o++) {
+                //     val[o] = command[startI + o];
+                // }
+                int value = atoi(msg.substring(startI, startI + valLength).toCharArray());
 
                 if (cCommand == 'R') {
                     controller.Roll(value);
@@ -78,6 +89,7 @@ void onConnected(MicroBitEvent) {
 
                 cCommand = cChar;
                 startI = i+1;
+                bEOC = false;
             }
         }
     }
