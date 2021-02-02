@@ -16,49 +16,46 @@
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Kufam&display=swap" rel="stylesheet">
     </head>
-    <body>
+    <body class="">
+        <!-- <h1>HOVER:BIT Controller</h1> -->
 
-        <div class="info">
-            <h1>HOVER:BIT Controller</h1>
-            <div class="info-device">
-                <span class="connection">
-                    <i class="material-icons">bluetooth</i>
-                </span>
-                <span class="battery">
-                    <i class="material-icons">battery_std</i>
-                    <span class="battery-status">0%</span>
-                </span>
-                <span class="arm">
-                    <i class="material-icons">warning</i>
-                </span>
-                <span class="ping">
-                    <i class="material-icons">settings_input_antenna</i>
-                </span>
-            </div>
+        <div class="statusline-bottom">
+            <span class="statusline-item connection">
+                <i class="material-icons">bluetooth</i>
+            </span>
+            <span class="statusline-item arm">
+                <i class="material-icons">warning</i>
+            </span>
+            <span class="statusline-item ping">
+                <i class="material-icons">settings_input_antenna</i>
+            </span>
+            <span class="statusline-item battery">
+                <i class="material-icons">battery_std</i>
+                <span class="battery-status">0%</span>
+            </span>
         </div>
 
-        <div class="options">
-            <button id="btn_connect">Connect</button>
-            <button id="btn_disconnect">Disconnect</button>
-            <button id="btn_arm">Arm</button>
-            <button id="btn_disarm">Disarm</button>
-            <button id="btn_sticky">Sticky controls</button>
+        <button class="button-center button-center-top"  id="btn_connect">Connect</button>
+        <button class="button-center button-center-top"  id="btn_disconnect">Disconnect</button>
+
+        <div class="acc-string">
+            <pre></pre>
         </div>
 
-        <div class="throttle">
-            <div class="throttle-thumb"></div>
-            <div class="throttle-indicator"></div>
+        <button class="button-center button-center-bottom" id="btn_arm">Arm</button>
+        <button class="button-center button-center-bottom" id="btn_disarm">Disarm</button>
+
+        <div class="joystick joystick-left">
         </div>
 
-        <div class="rudder">
-            <div class="rudder-thumb"></div>
-            <div class="rudder-indicator"></div>
+        <div class="joystick joystick-right">
         </div>
 
         <div class="log">
             <pre id="logEl"></pre>
         </div>
 
+        <script type="text/javascript" src="./nipplejs.js"></script>
         <script type="text/javascript" src="script.js"></script>
     </body>
 </html>

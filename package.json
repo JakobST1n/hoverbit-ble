@@ -6,6 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "microbit-web-bluetooth": "^0.6.0"
+    "microbit-web-bluetooth": "^0.6.0",
+    "nipplejs": "^0.8.7"
   }
 }
