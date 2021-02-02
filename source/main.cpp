@@ -53,6 +53,8 @@ void onConnected(MicroBitEvent) {
         int length = msg.length();
         const char* command = msg.toCharArray();
 
+        ManagedString accString("ACC:");
+
         char cCommand = command[0];
         char cChar;
         int startI = 1;
@@ -71,20 +73,21 @@ void onConnected(MicroBitEvent) {
             }
 
             if (bEOC) {
-                // char val[valLength];
-                // for (int o = 0; o < valLength; o++) {
-                //     val[o] = command[startI + o];
-                // }
+                /* We will just assume that we end up with a valid integer here */
                 int value = atoi(msg.substring(startI, startI + valLength).toCharArray());
 
                 if (cCommand == 'R') {
                     controller.Roll(value);
+                    accString = accString + ManagedString("R") + ManagedString(controller.Roll());
                 } else if (cCommand == 'T') {
                     controller.Throttle(value);
+                    accString = accString + ManagedString("T") + ManagedString(controller.Throttle());
                 } else if (cCommand == 'A') {
                     controller.Arm(value == 1);
+                    accString = accString + ManagedString("A") + ManagedString(controller.Arm());
                 } else if (cCommand == 'S') {
                     controller.Servo1(value);
+                    accString = accString + ManagedString("S") + ManagedString(controller.Servo1());
                 }
 
                 cCommand = cChar;
@@ -92,6 +95,10 @@ void onConnected(MicroBitEvent) {
                 bEOC = false;
             }
         }
+        // @TODO: Move this to the hoverControl module, we would rather like to have that there, or in the main loop.
+        // it could also be in the same clause as the batttery sending, but we might want to have it more
+        // dependent on actual received values.
+        uart->send(accString);
     }
 
 }
@@ -188,7 +195,7 @@ void mainScreen() {
     bool bDelayElapsed = (uBit.systemTime() - tmpTimer) > 1000;
     if (bDelayElapsed) { tmpTimer = uBit.systemTime(); }
 
-    if (bDelayElapsed && bConnected) { uart->send(batteryMilliVolt); }
+    if (bDelayElapsed && bConnected) { uart->send(ManagedString("B:") + ManagedString(batteryMilliVolt)); }
 
     switch (displayMainScreenMode) {
         case OFF:
