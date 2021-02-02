@@ -5,6 +5,7 @@ html, body {
     height: 100%; */
     font-family: monospace;
     overflow: hidden;
+    font-family: 'Kufam', cursive;
 }
 
 body {
@@ -22,13 +23,23 @@ body {
 }
 
 .info-device i {
-    font-size: 15px;
+    font-size: 18px;
 }
 
 .connection {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     color: #c32222;
+}
+
+.connection:after {
+    display: block;
+    content: "DISCONNECTED";
+}
+
+.connected .connection:after {
+    display: block;
+    content: "CONNECTED";
 }
 
 .connected .connection {
@@ -43,7 +54,7 @@ body {
     display: none;
     margin-left: 5px;
     /* display: flex; */
-    align-items: center;
+    align-items: start;
     color: #4a4a4a;
 }
 
@@ -55,15 +66,25 @@ body {
     display: none;
     margin-left: 5px;
     /* display: flex; */
-    align-items: center;
+    align-items: start;
     color: #c32222;
+}
+
+.arm:after {
+    content: 'DISARMED';
+    display: block;
+}
+
+.armed .arm:after {
+    content: 'ARMED';
+    display: block;
 }
 
 .connected .arm {
     display: flex;
 }
 
-.arm.armed {
+.armed .arm {
     color: #008000;
 }
 
@@ -98,12 +119,23 @@ body {
 }
 
 .options button {
+    display: none;
     margin-top: 5px;
     border: 1px solid black;
     background-color: #b5b5b5;
     padding: 10px;
     width: 120px;
 }
+
+.armed .options button {
+    display: block;
+}
+
+#btn_connect { display: block; }
+.connected #btn_connect { display: none; }
+.connected #btn_disconnect { display: block; }
+.connected #btn_arm { display: block; }
+.armed #btn_arm { display: none; }
 
 .throttle {
     position: absolute;
@@ -124,6 +156,32 @@ body {
     position: absolute;
     bottom: 0;
     background-color: green;
+}
+
+.throttle-indicator {
+    position: absolute;
+    width: 40px;
+    height: 0px;
+    bottom: 0;
+    /* border: 4px solid black; */
+}
+
+.throttle-indicator:before {
+    content: " ";
+    background-color: black;
+    width: 20px;
+    height: 1px;
+    position: absolute;
+    left: 0;
+}
+
+.throttle-indicator:after {
+    content: " ";
+    background-color: black;
+    width: 20px;
+    height: 1px;
+    position: absolute;
+    right: 0;
 }
 
 .rudder {
@@ -147,4 +205,30 @@ body {
     left: 50%;
     height: 40px;
     background-color: yellow;
+}
+
+.rudder-indicator {
+    position: absolute;
+    width: 0px;
+    height: 40px;
+    left: 50%;
+    bottom: 0;
+}
+
+.rudder-indicator:before {
+    content: " ";
+    background-color: black;
+    width: 1px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+}
+
+.rudder-indicator:after {
+    content: " ";
+    background-color: black;
+    width: 1px;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
 }

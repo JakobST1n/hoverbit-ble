@@ -8,11 +8,47 @@ let rudderElement = document.querySelector(".rudder");
 
 const hoverControlModule = () => {
     let _throttle = 0;
+    let _throttleAcc = 0;
     let _rudder = 0;
+    let _rudderAcc = 0;
     let _arm = false;
+    let _armAcc = false;
+
+    const acc = (accString) => {
+        accString.match(/[A-Z][-,0-9]+/g).forEach((item, i) => {
+            switch (item.substring(0, 1)) {
+                case "T":
+                    _throttleAcc = parseInt(item.substring(1, item.length));
+                    document.querySelector(".throttle-indicator").style["bottom"] = _throttleAcc + "%";
+                    break;
+                case "R":
+                    _rudderAcc = parseInt(item.substring(1, item.length));
+                    document.querySelector(".rudder-indicator").style.left = (((_rudderAcc+90) * (100)) / (180)) + "%";
+                    break;
+                case "A":
+                    _armAcc = parseInt(item.substring(1, item.length)) == 1;
+                    if (_armAcc) {
+                        document.body.classList.add("armed");
+                    } else {
+                        document.body.classList.remove("armed");
+                    }
+                    break;
+                case "S":
+                    break;
+                default:
+                    console.log(`Unkown acc: ${item}`);
+            }
+        });
+    }
+
+    const reset = () => {
+        setArm(0);
+        setThrottle(0);
+        setRudder(0);
+    }
 
     const setThrottle = (throttle) => {
-        if (!_arm) { return; }
+        if (!_armAcc) { return; }
         if (throttle > 100) { throttle = 100; }
         if (throttle < 0) { throttle = 0; }
         _throttle = throttle;
@@ -22,7 +58,7 @@ const hoverControlModule = () => {
     const getThrottle = () => _throttle;
 
     const setRudder = (rudder) => {
-        if (!_arm) { return; }
+        if (!_armAcc) { return; }
         if (rudder > 90) { rudder = 90; }
         if (rudder < -90) { rudder = -90; }
         _rudder = rudder;
@@ -48,6 +84,8 @@ const hoverControlModule = () => {
     const getArm = () => _arm;
 
     return {
+        acc,
+        reset,
         setThrottle,
         getThrottle,
         setRudder,
@@ -59,17 +97,23 @@ const hoverControlModule = () => {
 let hoverControl = hoverControlModule();
 
 window.onload = () => {
-    throttleElement.addEventListener('mousedown', on_pointer_hold_throttle,false);
-    document.body.addEventListener('mouseup', on_pointer_release_throttle, false);
+    addEventListener("touchstart", (touch) => {
+        addEventListener("touchmove", (touch => {
+            console.log(touch);
+        }), true);
+    }, false);
 
-    throttleElement.addEventListener('touchstart', on_pointer_hold_throttle,false);
-    document.body.addEventListener('touchend', on_pointer_release_throttle, false);
-
-    rudderElement.addEventListener('mousedown', on_pointer_hold_rudder,false);
-    document.body.addEventListener('mouseup', on_pointer_release_rudder, false);
-
-    rudderElement.addEventListener('touchstart', on_pointer_hold_rudder,false);
-    document.body.addEventListener('touchend', on_pointer_release_rudder, false);
+    // throttleElement.addEventListener('mousedown', on_pointer_hold_throttle,false);
+    // document.body.addEventListener('mouseup', on_pointer_release_throttle, false);
+    //
+    // throttleElement.addEventListener('touchstart', on_pointer_hold_throttle,false);
+    // document.body.addEventListener('touchend', on_pointer_release_throttle, false);
+    //
+    // rudderElement.addEventListener('mousedown', on_pointer_hold_rudder,false);
+    // document.body.addEventListener('mouseup', on_pointer_release_rudder, false);
+    //
+    // rudderElement.addEventListener('touchstart', on_pointer_hold_rudder,false);
+    // document.body.addEventListener('touchend', on_pointer_release_rudder, false);
 };
 
 function on_pointer_hold_throttle() {
@@ -140,20 +184,10 @@ let bDev;
 
 document.getElementById("btn_arm").addEventListener("click", () => {
     hoverControl.setArm(true);
-    document.querySelector(".arm").classList.add("armed");
-    document.querySelector(".arm-status").innerHTML = "ARMED";
-    document.querySelector("#btn_sticky").style.display = "block";
-    document.querySelector("#btn_disarm").style.display = "block";
-    document.querySelector("#btn_arm").style.display = "none";
 });
 
 document.getElementById("btn_disarm").addEventListener("click", () => {
     hoverControl.setArm(false);
-    document.querySelector(".arm").classList.remove("armed");
-    document.querySelector(".arm-status").innerHTML = "DISARMED";
-    document.querySelector("#btn_sticky").style.display = "none";
-    document.querySelector("#btn_disarm").style.display = "none";
-    document.querySelector("#btn_arm").style.display = "block";
 });
 
 document.getElementById("btn_sticky").addEventListener("click", () => {
@@ -174,21 +208,14 @@ document.getElementById("btn_connect").onclick = async () => {
     let connCheckInterval = setInterval(() => {
         if (device) {
             if (device.gatt.connected) {
-                document.querySelector("#btn_disconnect").style.display = "block";
-                document.querySelector("#btn_connect").style.display = "none";
-
-                document.querySelector(".info-device").classList.add("connected");
-                document.querySelector(".connection-status").innerHTML = "CONNECTED";
+                document.body.classList.add("connected");
+                // document.querySelector(".connection-status").innerHTML = "CONNECTED";
             } else {
-                hoverControl = hoverControlModule();
-                document.querySelector("#btn_sticky").style.display = "none";
-                document.querySelector("#btn_disarm").style.display = "none";
-                document.querySelector("#btn_arm").style.display = "none";
-                document.querySelector("#btn_disconnect").style.display = "none";
-                document.querySelector("#btn_connect").style.display = "block";
-                document.querySelector(".info-device").classList.remove("connected");
-                document.querySelector(".connection-status").innerHTML = "DISCONNECTED";
-                clearInterval(connCheckInterval);
+                hoverControl.reset();
+                document.body.classList.remove("connected");
+                document.body.classList.remove("armed");
+                // document.querySelector(".connection-status").innerHTML = "DISCONNECTED";
+                // clearInterval(connCheckInterval);
                 device.gatt.disconnect();
             }
         } else {
@@ -199,18 +226,15 @@ document.getElementById("btn_connect").onclick = async () => {
     }, 500);
 
     if (device) {
-        hoverControl = hoverControlModule();
+        hoverControl.reset();
         const services = await microbit.getServices(device);
 
-        document.querySelector("#btn_arm").style.display = "block";
-
         document.querySelector("#btn_disconnect").addEventListener("click", () => {
+            hoverControl.setArm(0);
+            hoverControl.setThrottle(0);
+            hoverControl.setRudder(0);
+
             device.gatt.disconnect();
-            document.querySelector("#btn_sticky").style.display = "none";
-            document.querySelector("#btn_disarm").style.display = "none";
-            document.querySelector("#btn_arm").style.display = "none";
-            document.querySelector("#btn_disconnect").style.display = "none";
-            document.querySelector("#btn_disconnect").onclick = null;
         });
 
         if (services.deviceInformationService) {
@@ -223,8 +247,17 @@ document.getElementById("btn_connect").onclick = async () => {
                 var newone = elm.cloneNode(true);
                 elm.parentNode.replaceChild(newone, elm);
 
-                document.querySelector(".battery-status").innerHTML = event.detail + "mV";
-                // console.log(event);
+                if ((event.detail).indexOf(":") != -1) {
+                    let parts = (event.detail).split(":");
+                    if (parts[0] == "B") {
+                        document.querySelector(".battery-status").innerHTML = parts[1] + "mV";
+                    } else if (parts[0] == "ACC") {
+                        console.log(parts[1]);
+                        hoverControl.acc(parts[1]);
+                    } else { console.log(parts); }
+                } else {
+                    console.log(`Received unknown: ${event.detail}`);
+                }
             });
 
             let sendCommands = setInterval(async() => {
@@ -238,7 +271,7 @@ document.getElementById("btn_connect").onclick = async () => {
                             ":";
                         await services.uartService.sendText(command);
                     } else {
-                        clearInterval(sendCommands);
+                        // clearInterval(sendCommands);
                         device.gatt.disconnect();
                     }
                 }

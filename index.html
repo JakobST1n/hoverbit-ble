@@ -2,7 +2,9 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="HandheldFriendly" content="true" />
+
         <title>HOVER:BIT Controller</title>
         <link rel="canonical" rel="https://jakobst1n.github.io/hoverbit-ble/">
         <link rel="stylesheet" type="text/css" href="styles.css">
@@ -10,6 +12,9 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
         <script type="text/javascript" src="microbit.umd.js"></script>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Kufam&display=swap" rel="stylesheet">
     </head>
     <body>
 
@@ -18,7 +23,6 @@
             <div class="info-device">
                 <span class="connection">
                     <i class="material-icons">bluetooth</i>
-                    <span class="connection-status">Disconnected</span>
                 </span>
                 <span class="battery">
                     <i class="material-icons">battery_std</i>
@@ -26,7 +30,6 @@
                 </span>
                 <span class="arm">
                     <i class="material-icons">warning</i>
-                    <span class="arm-status">Disarmed</span>
                 </span>
                 <span class="ping">
                     <i class="material-icons">settings_input_antenna</i>
@@ -36,18 +39,20 @@
 
         <div class="options">
             <button id="btn_connect">Connect</button>
-            <button style="display:none;" id="btn_disconnect">Disconnect</button>
-            <button style="display:none;" id="btn_arm">Arm</button>
-            <button style="display:none;" id="btn_disarm">Disarm</button>
-            <button style="display:none;" id="btn_sticky">Sticky controls</button>
+            <button id="btn_disconnect">Disconnect</button>
+            <button id="btn_arm">Arm</button>
+            <button id="btn_disarm">Disarm</button>
+            <button id="btn_sticky">Sticky controls</button>
         </div>
 
         <div class="throttle">
             <div class="throttle-thumb"></div>
+            <div class="throttle-indicator"></div>
         </div>
 
         <div class="rudder">
             <div class="rudder-thumb"></div>
+            <div class="rudder-indicator"></div>
         </div>
 
         <div class="log">
