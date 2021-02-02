@@ -1,7 +1,7 @@
 # HOVER:BIT Bluetooth Controller software
 This is software for controlling the HOVER:BIT kit with a progressive web app.
 
-The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, it uses the [micro:bit Web Bluetooth](https://github.com/thegecko/microbit-web-bluetooth) library.
+The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](https://github.com/JakobST1n/hoverbit-ble). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site.
 
 ## Usage
 ### Flashing the micro:bit
@@ -28,9 +28,12 @@ docker run -v $(pwd):/app --rm microbit-tools
 [Refer to this repo's readme](https://github.com/lancaster-university/microbit-v2-samples). This is in theory not hard, but if you like me have a lot of toolchains for compiling to other architectures already installed, it could be a bit of work to make function properly.
 
 ## Known issues
-- [ ] No multitouch support on webapp yet, this makes it difficult to use it, to make it a bit easier you can enable `Sticky controls`. (Current plan is to use [nipplejs](https://yoannmoi.net/nipplejs/) as joysticks)
+- [ ] Webapp is a bit ugly.
 - [ ] Things often stop working if you have been connected, drop the connection and then reconnect. I don't know exacly why, to circumvent this you can restart the webapp, and boot the micro:bit.
 - [ ] There is no failsafe-mode currently, this should be implemented according to the spektsat protocol.
+- [X] No multitouch support on webapp yet, this makes it difficult to use it, to make it a bit easier you can enable `Sticky controls`.
 
 ## Credits
+- The [micro:bit Web Bluetooth](https://github.com/thegecko/microbit-web-bluetooth) library is used by the webapp for bluetooth communication with the MICRO:BIT.
+- Joysticks on webapp is from the [nipplejs](https://yoannmoi.net/nipplejs/) library.
 - Current icon [made by strip](https://www.flaticon.com/authors/srip) from [Flaticon](https://www.flaticon.com/)
