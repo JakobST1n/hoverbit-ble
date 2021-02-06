@@ -1,5 +1,5 @@
 {
-	"background_color": "#464a47",
+	"background_color": "#454545",
 	"theme_color": "#5ac775",
 	"name": "HOVERBIT Controller",
 	"short_name": "HOVERBIT BLE",
@@ -8,7 +8,7 @@
     "orientation": "landscape",
     "icons": [
 		{
-			"src": "icon.png",
+			"src": "img/icon.png",
 			"sizes": "512x512",
 			"type": "image/png"
 		}

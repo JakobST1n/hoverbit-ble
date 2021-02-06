@@ -1,12 +1,28 @@
 {
-  "name": "hoverbit-ble",
+  "name": "hoverbit-ble-controller",
   "version": "1.0.0",
   "description": "",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "parcel ./src/index.html --https --public-url /hoverbit-ble/",
+    "build": "parcel build ./src/index.html --public-url /hoverbit-ble/",
+    "postbuild": "cp src/service-worker.js dist/service-worker.js"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.2",
     "microbit-web-bluetooth": "^0.6.0",
     "nipplejs": "^0.8.7"
-  }
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.32.6",
+    "typescript": "^4.1.3"
+  },
+  "browserslist": [
+    "last 3 and_chr versions",
+    "last 3 chrome versions",
+    "last 3 opera versions",
+    "last 3 ios_saf versions",
+    "last 3 safari versions"
+  ]
 }
