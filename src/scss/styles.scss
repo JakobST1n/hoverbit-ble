@@ -28,10 +28,21 @@ body {
     color: $foreground-base;
 }
 
-h1 {
-    font-size: 10px;
-    margin: 0;
-    color: $foreground-base;
+.app-info {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    left: max(env(safe-area-inset-left, 10px), 10px);
+
+    h1 {
+        font-size: 14px;
+        margin: 0;
+        color: $foreground-base;
+    }
+    .version {
+        display: block;
+        font-size: 9px;
+    }
 }
 
 .statusline {
