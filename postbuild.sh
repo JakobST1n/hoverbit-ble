@@ -20,7 +20,7 @@ sed -i".bak" "s/{{ VERSION }}/$VERSION/g" service-worker.js
 tput setaf 4; echo "> Add cache-files to webmanifest..."; tput sgr0
 cache_files="";
 for file in *; do
-    if [[ "$file" =~ (manifest.webmanifest|*.git) ]]; then
+    if [[ "$file" =~ (manifest.webmanifest|*.git|*.bak) ]]; then
         continue
     fi
     if [[ "$cache_files" == "" ]]; then
