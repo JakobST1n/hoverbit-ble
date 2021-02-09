@@ -36,4 +36,3 @@ docker run -v $(pwd):/app --rm microbit-tools
 ## Credits
 - The [micro:bit Web Bluetooth](https://github.com/thegecko/microbit-web-bluetooth) library is used by the webapp for bluetooth communication with the MICRO:BIT.
 - Joysticks on webapp is from the [nipplejs](https://yoannmoi.net/nipplejs/) library.
-- Current icon [made by strip](https://www.flaticon.com/authors/srip) from [Flaticon](https://www.flaticon.com/)
