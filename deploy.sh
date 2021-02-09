@@ -33,8 +33,6 @@ rm -r dist/
 npm install
 npm run build
 
-
-
 tput setaf 4
 echo "> Copy to gh-pages branch and commit"
 tput sgr0
@@ -46,12 +44,8 @@ git rm -rf .
 cp dist/.gitignore .gitignore
 cp -r dist/* .
 
-sed -i".bak" "s/{{ VERSION }}/$VERSION/g" index.html
-rm index.html.bak
-
 git add .
 git commit -m ":rocket: Deploy app v$VERSION"
-
 
 tput setaf 4
 echo "> Return to controller branch and tag last commit"
