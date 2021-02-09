@@ -1,2 +1,3 @@
 utils/* linguist-documentation
 utils/* linguist-vendored
+CMakeLists.txt linguist-vendored
