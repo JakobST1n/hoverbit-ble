@@ -5,8 +5,6 @@ import { notif_alert, notif_warn, notif_info, notif_success } from './notificati
 
 let sw = "service-worker.js";
 if (navigator.serviceWorker) {
-    //    navigator.serviceWorker.register(sw, {scope: '/hoverbit-ble/'});
-    //}
     navigator.serviceWorker.register(
         sw, {scope: '/hoverbit-ble/'}
     ).then(registration => {
@@ -65,7 +63,16 @@ joystickLeft.on("end", (evt, data) => {
 
 joystickRight.on("move", (evt, data) => {
     let throttle = data.distance;
-    if (data.angle.degree > 90) { throttle = 0; }
+
+    if (data.angle.degree > 90) {
+        throttle = 0;
+        if (data.distance >= 100) {
+            hoverControl.reset();
+            if (hoverControl.getArm()) {
+                notif_alert("Detected panicy reducing of throttle, dearming...");
+            }
+        }
+    }
     hoverControl.setThrottle(throttle);
 });
 joystickRight.on("end", (evt, data) => {
