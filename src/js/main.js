@@ -21,6 +21,7 @@ if (navigator.serviceWorker) {
                 }
             };
         };
+        registration.update();
     }).catch(error => {
         notif_alert("Could not install service worker...");
         console.error("Error during service worker registration:", error);
