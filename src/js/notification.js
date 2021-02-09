@@ -1,9 +1,23 @@
+let waiting_timer = undefined;
 let notif_queue = [];
 
 function notif(notif_c) {
     let notification_area = document.querySelector(".statusline .notification-area");
 
-    if (notification_area.querySelector(".notification") === null) {
+    if ((notification_area.querySelector(".notification") === null) && (waiting_timer === undefined)) {
+        // This is just so no notifications will be played and disappears while the full screen landscape warning is in the way.
+        if( (screen.availHeight > screen.availWidth) && (!document.body.classList.contains("ignore-landscape-warning"))){
+            waiting_timer = setInterval(() => {
+                if( (screen.availHeight < screen.availWidth) || (document.body.classList.contains("ignore-landscape-warning"))){
+                    clearInterval(waiting_timer);
+                    waiting_timer = undefined;
+                    notif(notif_queue.pop());
+                }
+            }, 1000);
+            notif_queue.push(notif_c);
+            return;
+        }
+
         let notif_elem = document.createElement("div");
         notif_elem.className = "notification";
         notif_elem.appendChild(notif_c[0]);
