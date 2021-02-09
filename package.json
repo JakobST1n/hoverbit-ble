@@ -1,6 +1,6 @@
 {
   "name": "hoverbit-ble-controller",
-  "version": "1.0.8",
+  "version": "1.0.8-alpha",
   "description": "",
   "license": "MIT",
   "scripts": {
