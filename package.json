@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "parcel ./src/index.html --https --public-url /hoverbit-ble/",
     "build": "parcel build ./src/index.html --public-url /hoverbit-ble/",
-    "postbuild": "cp src/service-worker.js dist/service-worker.js"
+    "postbuild": "./postbuild.sh"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
