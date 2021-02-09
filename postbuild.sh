@@ -1,5 +1,5 @@
 #!/bin/bash
-PUBLISH_URL="/"
+PUBLISH_URL=""
 
 cd "dist" || exit 1
 
