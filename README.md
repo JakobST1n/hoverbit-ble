@@ -1,7 +1,9 @@
 # HOVER:BIT Bluetooth Controller software
 This is software for controlling the HOVER:BIT kit with a progressive web app.
 
-The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](http://jakobst1n.github.io/hoverbit-ble/). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site.
+The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](http://jakobst1n.github.io/hoverbit-ble/). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site. 
+
+Only tested on __Google Chrome__! Will __NOT__ work on Safari (as apple doesn't allow web bluetooth). I have not tested on IOS, but it should work with chrome there as well.
 
 ## Usage
 ### Flashing the micro:bit
