@@ -1,11 +1,11 @@
 # HOVER:BIT Bluetooth Controller software
 This is software for controlling the HOVER:BIT kit with a progressive web app.
 
-The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](https://github.com/JakobST1n/hoverbit-ble). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site.
+The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](http://jakobst1n.github.io/hoverbit-ble/). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site.
 
 ## Usage
 ### Flashing the micro:bit
-Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/) for the Releases, and flash your micro:bit with this file. 
+Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/) from Releases, and flash your micro:bit with this file. 
 To do this, plug the micro:bit into your computer. The micro:bit will then appear as a removable flash drive, then simply copy (drag-drop)
 the hex-file into the flash-drive folder.
 
@@ -17,7 +17,7 @@ the hover:bit.
 ## Compiling the hex-file yourself
 Clone or fork this repo locally, and navigate to that folder in your terminal of choice. At this point you have two choises:
 ### Docker image
-I have been using the docker image provided by [Lancaster university](https://github.com/lancaster-university/microbit-v2-samples/blob/master/Dockerfile), because it is rather convenient and a lot less work to get up and running. Just build the container, and run it with a volume as a bind-mount to the code-directory.
+I a docker image to compile the source. The [Dockerfile](https://github.com/JakobST1n/hoverbit-ble/blob/master/Dockerfile) is in the root of this repo. Using a docker container is rather convenient and a lot less work to get up and running. Just build the container, and run it with a volume as a bind-mount to the code-directory.
 ```sh
 # Build the image on your machine
 docker build -t microbit-tools .
