@@ -17,7 +17,7 @@ the hover:bit.
 ## Compiling the hex-file yourself
 Clone or fork this repo locally, and navigate to that folder in your terminal of choice. At this point you have two choises:
 ### Docker image
-I a docker image to compile the source. The [Dockerfile](https://github.com/JakobST1n/hoverbit-ble/blob/master/Dockerfile) is in the root of this repo. Using a docker container is rather convenient and a lot less work to get up and running. Just build the container, and run it with a volume as a bind-mount to the code-directory.
+I have used a docker image to compile the source. The [Dockerfile](https://github.com/JakobST1n/hoverbit-ble/blob/master/Dockerfile) is in the root of this repo. Using a docker container is rather convenient and a lot less work to get up and running. Just build the container, and run it with a volume as a bind-mount to the code-directory.
 ```sh
 # Build the image on your machine
 docker build -t microbit-tools .
