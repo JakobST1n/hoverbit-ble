@@ -59,5 +59,5 @@ tput sgr0
 
 git checkout controller
 
-#git push --follow-tags origin controller
-#git push origin gh-pages
+git push --follow-tags origin controller
+git push origin gh-pages
