@@ -4,29 +4,30 @@ import hoverControlModule from './hoverControlModule';
 import { notif_alert, notif_warn, notif_info, notif_success } from './notification';
 
 let sw = "service-worker.js";
-//if (navigator.serviceWorker) {
-//    navigator.serviceWorker.register(sw, {scope: '/hoverbit-ble/'});
-//}
-navigator.serviceWorker.register(
-    sw, {scope: '/hoverbit-ble/'}
-).then(registration => {
-    registration.onupdatefound = () => {
-        const installingWorker = registration.installing;
-        if (installingWorker == null) { return; }
-        installingWorker.onstatechange = () => {
-            if (installingWorker.state === "installed") {
-                if (navigator.serviceWorker.controller) {
-                    notif_info("New content is available, relaunch the app to install it.");
-                } else {
-                    notif_success("Content is cached for offline use.");
+if (navigator.serviceWorker) {
+    //    navigator.serviceWorker.register(sw, {scope: '/hoverbit-ble/'});
+    //}
+    navigator.serviceWorker.register(
+        sw, {scope: '/hoverbit-ble/'}
+    ).then(registration => {
+        registration.onupdatefound = () => {
+            const installingWorker = registration.installing;
+            if (installingWorker == null) { return; }
+            installingWorker.onstatechange = () => {
+                if (installingWorker.state === "installed") {
+                    if (navigator.serviceWorker.controller) {
+                        notif_info("New content is available, relaunch the app to install it.");
+                    } else {
+                        notif_success("Content is cached for offline use.");
+                    }
                 }
-            }
+            };
         };
-    };
-}).catch(error => {
-    notif_alert("Could not install service worker...");
-    console.error("Error during service worker registration:", error);
-});
+    }).catch(error => {
+        notif_alert("Could not install service worker...");
+        console.error("Error during service worker registration:", error);
+    });
+}
 
 document.getElementById("btn_ignore_landscape_warning").addEventListener("click", () => {
     document.body.classList.add("ignore-landscape-warning");

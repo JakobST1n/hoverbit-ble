@@ -1,5 +1,5 @@
 #!/bin/bash
-PUBLISH_URL=""
+PUBLISH_URL="/hoverbit-ble/"
 
 cd "dist" || exit 1
 
