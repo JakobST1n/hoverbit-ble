@@ -23,7 +23,10 @@ VERSION=$(cat package.json \
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g' \
   | tr -d '[[:space:]]')
+
 echo "Deploying for tag: $VERSION."
+git add package.json package-lock.json
+git commit --amend --no-edit
 
 tput setaf 4
 echo "> Build app"
@@ -55,6 +58,6 @@ git checkout controller
 
 git tag "v$VERSION"
 
-#git push --follow-tags origin controller
+git push -f origin controller
 git push origin "v$VERSION"
 git push origin gh-pages
