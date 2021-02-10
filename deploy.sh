@@ -12,9 +12,9 @@ echo "> Bump version number"
 tput sgr0
 
 if [ $# -gt 0 ]; then
-    npm version "$1" || exit 1;
+    npm --no-git-tag-version version "$1" || exit 1;
 else
-    npm version patch || exit 1;
+    npm --no-git-tag-version version patch || exit 1;
 fi
 
 VERSION=$(cat package.json \
@@ -53,5 +53,8 @@ tput sgr0
 
 git checkout controller
 
-git push --follow-tags origin controller
+git tag "v$VERSION"
+
+#git push --follow-tags origin controller
+git push origin "v$VERSION"
 git push origin gh-pages
