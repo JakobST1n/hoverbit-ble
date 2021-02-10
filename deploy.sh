@@ -59,5 +59,5 @@ git checkout controller
 git tag "v$VERSION"
 
 git push -f origin controller
-git push origin "v$VERSION"
+#git push origin "v$VERSION"
 git push origin gh-pages
