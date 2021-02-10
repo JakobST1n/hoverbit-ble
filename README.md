@@ -29,6 +29,9 @@ docker run -v $(pwd):/app --rm microbit-tools
 ### Manually
 [Refer to this repo's readme](https://github.com/lancaster-university/microbit-v2-samples). This is in theory not hard, but if you like me have a lot of toolchains for compiling to other architectures already installed, it could be a bit of work to make function properly.
 
+## Versions
+There is no connection between the version of the app and the version of the MICRO:BIT code, other than that major versions is supposed to be compatible. Meaning that if you come over some problems, and don't find a [issue](https://github.com/JakobST1n/hoverbit-ble/issues) describing your problem. You should first check that the major version of both the app and microbit hex is the same (e.g. app `1.0.8-alpha.0`and MICRO:BIT `1.0.1`, where the first number is the major).
+
 ## Known issues
 Take a look at [active issues](https://github.com/JakobST1n/hoverbit-ble/issues). Submit a issue there if find any problems.
 
