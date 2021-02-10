@@ -7,7 +7,7 @@ Only tested on __Google Chrome__! Will __NOT__ work on Safari (as apple doesn't 
 
 ## Usage
 ### Flashing the micro:bit
-Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/) from Releases, and flash your micro:bit with this file. 
+Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/latest) from Releases, and flash your micro:bit with this file. 
 To do this, plug the micro:bit into your computer. The micro:bit will then appear as a removable flash drive, then simply copy (drag-drop)
 the hex-file into the flash-drive folder.
 
