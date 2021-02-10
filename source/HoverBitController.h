@@ -27,7 +27,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include <MicroBit.h>
 
-#define BATTERY_LOW_LIMIT 3500
+#define BATTERY_LOW_LIMIT   3500
+#define FSAFE_TLIM_THROTTLE 1000 // When to cut the throttle
+#define FSAFE_TLIM_ARM      5000 // When to disarm
 
 class HoverBitController {
     private:
@@ -40,16 +42,17 @@ class HoverBitController {
         int pitch;
         int yaw;
         int throttle;
-        int failSafeC;
+        unsigned long receiveTime;
 
         bool mainController;
         bool batteryEmpty;
         int batteryMilliVolt;
         float batteryFactor;
 
+        bool failSafe(void);
+
     public:
         void init(MicroBit* _uBit);
-        void failSafe(void);
         unsigned int getBatteryVoltage(void);
         void AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,int Aux1,int Aux2);
         void HoverControl();

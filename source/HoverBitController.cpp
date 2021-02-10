@@ -45,6 +45,7 @@ void HoverBitController::init(MicroBit* _uBit) {
     yaw = 0;
     throttle = 0;
     failSafeC = 0;
+    receiveTime = (*uBit).systemTime();
 
     /* I am not completly sure what this does, but it seems to me like this is
        putting the air:bit board in some kind of "bind-mode", on the spec-sheet
@@ -60,12 +61,17 @@ void HoverBitController::init(MicroBit* _uBit) {
 /**
  * This is not implemented yet.
  */
-void HoverBitController::failSafe(void) {
-    // throttle = 0;
-    // roll = 0;
-    // yaw = 0;
-    // arm = 0;
-    // failSafeC++;
+bool HoverBitController::failSafe(void) {
+    unsigned long deltaReceiveTime = (*uBit.systemTime()) - receiveTime;
+    if (deltaReceiveTime > FSAFE_TLIM_THROTTLE) {
+        Throttle(0);
+        Roll(0);
+        Servo1(0);
+    }
+    if (deltaReceiveTime > FSAFE_TLIM_ARM) {
+        Arm(0);
+    }
+    return (deltaReceiveTime > FSAFE_TLIM_THROTTLE) || (deltaReceiveTime > FSAFE_TLIM_ARM);
 }
 
 /**
@@ -144,7 +150,9 @@ void HoverBitController::AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,
  * Method that sends commands with the current values for all parameters.
  */
 void HoverBitController::HoverControl() {
-    AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
+    if (!failSafe()) {
+        AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
+    }
 }
 
 int HoverBitController::Throttle() {
@@ -154,6 +162,7 @@ void HoverBitController::Throttle(int _throttle) {
     if      (_throttle > 99) { throttle = 100; }
     else if (_throttle <  0) { throttle =   0; }
     else { throttle = _throttle; }
+    lastReceiveTime = (*uBit).systemTime();
 }
 int HoverBitController::Servo1() {
     return servo_1;
@@ -162,6 +171,7 @@ void HoverBitController::Servo1(int _servo1) {
     if      (_servo1 > 180) { servo_1 = 180; }
     else if (_servo1 <   0) { servo_1 =   0; }
     else { servo_1 = _servo1; }
+    lastReceiveTime = (*uBit).systemTime();
 }
 int HoverBitController::Roll() {
     return roll;
@@ -170,12 +180,14 @@ void HoverBitController::Roll(int _roll) {
     if      (_roll >   90) { roll =  90; }
     else if (_roll <  -90) { roll = -90; }
     else    { roll = _roll; }
+    lastReceiveTime = (*uBit).systemTime();
 }
 bool HoverBitController::Arm() {
     return (arm == 1);
 }
 void HoverBitController::Arm(bool _arm) {
     arm = (int)_arm;
+    lastReceiveTime = (*uBit).systemTime();
 }
 bool HoverBitController::BatteryEmpty() {
     return batteryEmpty;
