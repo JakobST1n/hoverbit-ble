@@ -31,6 +31,12 @@ DEALINGS IN THE SOFTWARE.
 #define FSAFE_TLIM_THROTTLE 1000 // When to cut the throttle
 #define FSAFE_TLIM_ARM      5000 // When to disarm
 
+/**
+ * This class can be used to interface with a AirBit card for controlling a HOVER:BIT kit.
+ *
+ * A lot of the features of the airbit is ignored here and made easy to understand if all
+ * you want to do is use it for a hoverbit.
+ */
 class HoverBitController {
     private:
         MicroBit* uBit;
@@ -42,7 +48,7 @@ class HoverBitController {
         int pitch;
         int yaw;
         int throttle;
-        unsigned long receiveTime;
+        unsigned long lastReceiveTime;
 
         bool mainController;
         bool batteryEmpty;
@@ -50,19 +56,17 @@ class HoverBitController {
         float batteryFactor;
 
         bool failSafe(void);
+        void AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,int Aux1,int Aux2);
 
     public:
         void init(MicroBit* _uBit);
-        unsigned int getBatteryVoltage(void);
-        void AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,int Aux1,int Aux2);
+        unsigned int GetBatteryVoltage(void);
         void HoverControl();
 
         int  Throttle();
         void Throttle(int _throttle);
-        int  Servo1();
-        void Servo1(int _servo1);
-        int  Roll();
-        void Roll(int _roll);
+        int  Rudder();
+        void Rudder(int _rudder);
         bool Arm();
         void Arm(bool _arm);
         bool BatteryEmpty();

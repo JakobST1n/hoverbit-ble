@@ -77,17 +77,17 @@ void onConnected(MicroBitEvent) {
                 int value = atoi(msg.substring(startI, startI + valLength).toCharArray());
 
                 if (cCommand == 'R') {
-                    controller.Roll(value);
-                    accString = accString + ManagedString("R") + ManagedString(controller.Roll());
+                    controller.Rudder(value);
+                    accString = accString + ManagedString("R") + ManagedString(controller.Rudder());
                 } else if (cCommand == 'T') {
                     controller.Throttle(value);
                     accString = accString + ManagedString("T") + ManagedString(controller.Throttle());
                 } else if (cCommand == 'A') {
                     controller.Arm(value == 1);
                     accString = accString + ManagedString("A") + ManagedString(controller.Arm());
-                } else if (cCommand == 'S') {
-                    controller.Servo1(value);
-                    accString = accString + ManagedString("S") + ManagedString(controller.Servo1());
+                }
+                } else {
+                    // We ignore it :)
                 }
 
                 cCommand = cChar;
@@ -261,7 +261,7 @@ int main() {
     uBit.audio.soundExpressions.play(ManagedString("hello"));
 
     while (1) {
-        batteryMilliVolt = controller.getBatteryVoltage();
+        batteryMilliVolt = controller.GetBatteryVoltage();
 
         if (uBit.logo.isPressed()) {
             if (!bCapLogoIsPressed) {
