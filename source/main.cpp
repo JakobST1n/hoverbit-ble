@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 #include "HoverBitController.h"
 #include "Screen.h"
 
+#define VERSION "0.0.1"
 #define BLE_UART_DELIM ":"
 
 MicroBit uBit;
@@ -232,22 +233,18 @@ void mainScreen() {
             }
             break;
     }
-
-    if (bConnected) {
-        uBit.display.image.setPixelValue(0, 0, 255);
-    } else {
-        if (bDelayElapsed) { bBLEIndicator = !bBLEIndicator; }
-        if (bBLEIndicator) {
-            uBit.display.image.setPixelValue(0, 0, 0);
-        } else {
-            uBit.display.image.setPixelValue(0, 0, 255);
-        }
-    }
 }
 
 void onButtonA_press(MicroBitEvent e) {
+    nextMainScreenDisplayMode();
 }
 void onButtonB_press(MicroBitEvent e) {
+}
+void onButtonAB_press(MicroBitEvent e) {
+    DisplayMainScreenMode tmpDMode = displayMainScreenMode;
+    displayMainScreenMode = OFF;
+    uBit.display.scroll(VERSION);
+    displayMainScreenMode = tmpDMode;
 }
 
 int main() {
@@ -270,6 +267,7 @@ int main() {
 
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK, onButtonA_press);
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK, onButtonB_press);
+    uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_CLICK, onButtonAB_press);
 
     // uartService
     // Note GATT table size increased from default in MicroBitConfig.h
