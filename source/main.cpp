@@ -258,7 +258,7 @@ int main() {
 
     /* Initialize hover:bit controller module
      * the init procedure have to be run within 100ms after air:bit power up */
-    controller.init(&uBit);
+    controller.init();
 
     // Setup listeners
     uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_CONNECTED, onConnected);
