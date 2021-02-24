@@ -193,7 +193,25 @@ void mainScreen() {
     bool bDelayElapsed = (uBit.systemTime() - tmpTimer) > 1000;
     if (bDelayElapsed) { tmpTimer = uBit.systemTime(); }
 
-    if (bDelayElapsed && bConnected) { uart->send(ManagedString("B:") + ManagedString(batteryMilliVolt)); }
+    if (bConnected) {
+        if (bDelayElapsed) {
+            uart->send(ManagedString("B:") + ManagedString(batteryMilliVolt));
+        }
+    } else {
+        if (bDelayElapsed) {
+            bBLEIndicator = !bBLEIndicator;
+            uBit.display.clear();
+            if (bBLEIndicator) {
+                MicroBitImage img(bluetoothSymbol);
+                uBit.display.print(img);
+            } else {
+                // Need to actually see this to know if I want to flash only
+                // blank screen or with battery.
+                //batteryLevelFullScreen();
+            }
+        }
+        return;
+    }
 
     switch (displayMainScreenMode) {
         case OFF:

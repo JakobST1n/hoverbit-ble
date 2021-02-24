@@ -67,6 +67,12 @@ static const char* const strBattLevel[] = {
     000,255,255,255,000\n\
     000,255,255,255,000\n"
 };
+const char* const bluetoothSymbol = "\
+    000,000,255,255,000\n\
+    255,000,255,000,255\n\
+    000,255,255,255,000\n\
+    255,000,255,000,255\n\
+    000,000,255,255,000\n";
 
 void plotYLine(MicroBit *uBit, int y1, int y2, int x);
 
