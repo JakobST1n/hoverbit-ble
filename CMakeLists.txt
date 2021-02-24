@@ -43,6 +43,7 @@ sbeParseJson(codal codal_json)
 
 set(CODAL_APP_OUTPUT_DIR ".")
 set(CODAL_APP_SOURCE_DIR "source")
+set(CODAL_APP_INCLUDE_DIR "inc")
 
 if("${codal.application}" STRGREATER "")
     set(CODAL_APP_SOURCE_DIR "${codal.application}")
@@ -231,7 +232,7 @@ if("${device.libraries}" STRGREATER "")
 endif()
 
 #finally, find sources and includes of the application, and create a target.
-RECURSIVE_FIND_DIR(INCLUDE_DIRS "./inc" "${PROJECT_SOURCE_DIR}/${CODAL_APP_SOURCE_DIR}" "*.h")
+RECURSIVE_FIND_DIR(INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${CODAL_APP_INCLUDE_DIR}" "*.h")
 # *.c?? only catches .cpp, not .c, so let's be precise
 RECURSIVE_FIND_FILE(SOURCE_FILES "${PROJECT_SOURCE_DIR}/${CODAL_APP_SOURCE_DIR}" "*.cpp")
 
