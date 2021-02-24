@@ -27,6 +27,8 @@ DEALINGS IN THE SOFTWARE.
 #include "HoverBitController.h"
 #include "Screen.h"
 
+#define BLE_UART_DELIM ":"
+
 MicroBit uBit;
 MicroBitUARTService *uart;
 HoverBitController controller;
@@ -44,68 +46,64 @@ DisplayMainScreenMode displayMainScreenMode = GRAPHS;
 void onConnected(MicroBitEvent) {
     bConnected = 1;
     uBit.audio.soundExpressions.play(ManagedString("giggle"));
-
-    // mobile app will send ASCII strings terminated with the colon character
-    ManagedString eom(":");
-
-    while (bConnected) {
-        ManagedString msg = uart->readUntil(eom);
-        int length = msg.length();
-        const char* command = msg.toCharArray();
-
-        ManagedString accString("ACC:");
-
-        char cCommand = command[0];
-        char cChar;
-        int startI = 1;
-        bool bEOC = false;
-        int valLength = 0;
-
-        for (int i = 1; i < length; i++) {
-            cChar = command[i];
-
-            if (i >= length - 1) {
-                bEOC = true;
-                valLength = i - startI + 1;
-            } else if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S') {
-                bEOC = true;
-                valLength = i - startI;
-            }
-
-            if (bEOC) {
-                /* We will just assume that we end up with a valid integer here */
-                int value = atoi(msg.substring(startI, startI + valLength).toCharArray());
-
-                if (cCommand == 'R') {
-                    controller.Rudder(value);
-                    accString = accString + ManagedString("R") + ManagedString(controller.Rudder());
-                } else if (cCommand == 'T') {
-                    controller.Throttle(value);
-                    accString = accString + ManagedString("T") + ManagedString(controller.Throttle());
-                } else if (cCommand == 'A') {
-                    controller.Arm(value == 1);
-                    accString = accString + ManagedString("A") + ManagedString(controller.Arm());
-                }
-                } else {
-                    // We ignore it :)
-                }
-
-                cCommand = cChar;
-                startI = i+1;
-                bEOC = false;
-            }
-        }
-        // @TODO: Move this to the hoverControl module, we would rather like to have that there, or in the main loop.
-        // it could also be in the same clause as the batttery sending, but we might want to have it more
-        // dependent on actual received values.
-        uart->send(accString);
-    }
-
 }
 
 void onDisconnected(MicroBitEvent) {
     bConnected = 0;
     uBit.audio.soundExpressions.play(ManagedString("sad"));
+}
+
+void onDelim(MicroBitEvent) {
+    ManagedString msg = uart->readUntil(BLE_UART_DELIM);
+
+    int length = msg.length();
+    const char* command = msg.toCharArray();
+
+    ManagedString accString("ACC:");
+
+    char cCommand = command[0];
+    char cChar;
+    int startI = 1;
+    bool bEOC = false;
+    int valLength = 0;
+
+    for (int i = 1; i < length; i++) {
+        cChar = command[i];
+
+        if (i >= length - 1) {
+            bEOC = true;
+            valLength = i - startI + 1;
+        } else if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S') {
+            bEOC = true;
+            valLength = i - startI;
+        }
+
+        if (bEOC) {
+            /* We will just assume that we end up with a valid integer here */
+            int value = atoi(msg.substring(startI, startI + valLength).toCharArray());
+
+            if (cCommand == 'R') {
+                controller.Rudder(value);
+                accString = accString + ManagedString("R") + ManagedString(controller.Rudder());
+            } else if (cCommand == 'T') {
+                controller.Throttle(value);
+                accString = accString + ManagedString("T") + ManagedString(controller.Throttle());
+            } else if (cCommand == 'A') {
+                controller.Arm(value == 1);
+                accString = accString + ManagedString("A") + ManagedString(controller.Arm());
+            } else {
+                // We ignore it :)
+            }
+
+            cCommand = cChar;
+            startI = i+1;
+            bEOC = false;
+        }
+    }
+    // @TODO: Move this to the hoverControl module, we would rather like to have that there, or in the main loop.
+    // it could also be in the same clause as the batttery sending, but we might want to have it more
+    // dependent on actual received values.
+    uart->send(accString);
 }
 
 void iconBatteryDead() {
@@ -250,6 +248,8 @@ int main() {
     // Setup listeners
     uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_CONNECTED, onConnected);
     uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_DISCONNECTED, onDisconnected);
+    uBit.messageBus.listen(MICROBIT_ID_BLE_UART, MICROBIT_UART_S_EVT_DELIM_MATCH, onDelim);
+
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK, onButtonA_press);
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK, onButtonB_press);
 
@@ -257,6 +257,7 @@ int main() {
     // Note GATT table size increased from default in MicroBitConfig.h
     // #define MICROBIT_SD_GATT_TABLE_SIZE             0x500
     uart = new MicroBitUARTService(*uBit.ble, 32, 32);
+    uart->eventOn(BLE_UART_DELIM); 
 
     uBit.audio.soundExpressions.play(ManagedString("hello"));
 
