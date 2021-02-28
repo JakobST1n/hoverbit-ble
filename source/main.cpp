@@ -70,7 +70,12 @@ void onDelim(MicroBitEvent) {
         if (i >= length - 1) {
             bEOC = true;
             valLength = i - startI + 1;
-        } else if (cChar == 'R' || cChar == 'T' || cChar == 'A' || cChar == 'S') {
+        } else if (cChar == 'R' || // Roll
+                   cChar == 'T' || // Throttle
+                   cChar == 'A' || // Arm
+                   cChar == 'S' || // (Servo1) Keeping this for compatability
+                   cChar == 'D'    // DisplayMainScreenMode
+                  ) {
             bEOC = true;
             valLength = i - startI;
         }
@@ -88,6 +93,18 @@ void onDelim(MicroBitEvent) {
             } else if (cCommand == 'A') {
                 controller.Arm(value == 1);
                 accString = accString + ManagedString("A") + ManagedString(controller.Arm());
+            } else if (cCommand == 'D') {
+                switch (value) {
+                    case 0:
+                        hoverBitDisplay.mode(GRAPHS);
+                        break;
+                    case 1:
+                        hoverBitDisplay.mode(BATTERY);
+                        break;
+                    case 2:
+                        hoverBitDisplay.mode(OFF);
+                        break;
+                }
             } else {
                 // We ignore it :)
             }
