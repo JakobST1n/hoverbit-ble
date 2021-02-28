@@ -26,6 +26,10 @@ DEALINGS IN THE SOFTWARE.
 #define SCREEN_H_
 
 #include <MicroBit.h>
+#include "HoverBitController.h"
+
+extern MicroBit uBit;
+extern HoverBitController controller;
 
 enum DisplayMainScreenMode { GRAPHS, BATTERY, OFF };
 
@@ -74,6 +78,35 @@ const char* const bluetoothSymbol = "\
     255,000,255,000,255\n\
     000,000,255,255,000\n";
 
-void plotYLine(MicroBit *uBit, int y1, int y2, int x);
+class HoverBitDisplay {
+    private:
+        DisplayMainScreenMode screenMode;
+        unsigned int tmpTimer;
+        bool BLEconnected;
+        bool bBLEIndicator;
+        bool flipFrame;
+        bool isPause;
+
+        void lowBattery();
+        void BLENotConnected();
+        void mainScreen();
+        void showGraphs();
+
+    public:
+        void mode(DisplayMainScreenMode mode);
+        DisplayMainScreenMode mode();
+        void nextMode();
+        void pause();
+        void pause(bool p);
+        void update();
+        void updateBLEState(bool connected);
+};
+
+void plotYLine(int y1, int y2, int x);
+void plotXLine(int x1, int x2, int y);
+void iconBatteryDead();
+void iconBatteryLow();
+void iconBatteryCharging();
+void batteryLevelFullScreen();
 
 #endif // SCREEN_H_

@@ -33,24 +33,20 @@ DEALINGS IN THE SOFTWARE.
 MicroBit uBit;
 MicroBitUARTService *uart;
 HoverBitController controller;
+HoverBitDisplay hoverBitDisplay;
 
 bool bConnected = false;
-
-bool batteryEmpty = false;
 bool bCapLogoIsPressed = false;
-int batteryMilliVolt = 3700;
-unsigned long tmpTimer;
-bool bBLEIndicator = false;
-
-DisplayMainScreenMode displayMainScreenMode = GRAPHS;
 
 void onConnected(MicroBitEvent) {
     bConnected = 1;
+    hoverBitDisplay.updateBLEState(true);
     uBit.audio.soundExpressions.play(ManagedString("giggle"));
 }
 
 void onDisconnected(MicroBitEvent) {
     bConnected = 0;
+    hoverBitDisplay.updateBLEState(false);
     uBit.audio.soundExpressions.play(ManagedString("sad"));
 }
 
@@ -107,150 +103,22 @@ void onDelim(MicroBitEvent) {
     uart->send(accString);
 }
 
-void iconBatteryDead() {
-    MicroBitImage img(strBattDead);
-    uBit.display.print(img);
-}
-
-void iconBatteryLow() {
-    MicroBitImage img(strBattLow);
-    uBit.display.print(img);
-}
-
-void lowBattery() {
-    if (batteryEmpty) {
-        iconBatteryDead();
-    } else if (batteryMilliVolt > BATTERY_LOW_LIMIT - 50){
-        iconBatteryLow();
-    } else {
-        iconBatteryDead();
-    }
-}
-
-void iconBatteryCharging() {
-    int low = 0;
-    int high = 3;
-    if (batteryMilliVolt >= 4200) {
-        low = 3;
-    } else if (batteryMilliVolt >= 4040) {
-        low = 2;
-    } else if (batteryMilliVolt >= 3900) {
-        low = 1;
-    }
-
-    for (int i = low; i <= high; i++) {
-        MicroBitImage img(strBattLevel[i]);
-        uBit.display.print(img);
-        uBit.sleep(400);
-    }
-}
-
-void batteryLevelFullScreen() {
-    int level = 0;
-    if (controller.Arm()) {
-        level = (((batteryMilliVolt - 3400) * 3) / 500);
-    } else {
-        level = (((batteryMilliVolt - 3700) * 3) / 500);
-    }
-    if (level < 0) { level = 0; }
-    if (level > 3) { level = 3; }
-    MicroBitImage img(strBattLevel[level]);
-    uBit.display.print(img);
-}
-
-void plotYLine(int y1, int y2, int x) {
-    /**
-     * Draw a line along the Y axis. y1: first pixel, y2: last pixel
-     */
-
-    if (y1 >= y2) {
-        for (int y = y2; y <= y1; y++) {
-            uBit.display.image.setPixelValue(x, y, 255);
-        }
-    }
-    else if (y1 < y2) {
-        for (int y = y1; y <= y2; y++) {
-            uBit.display.image.setPixelValue(x, y, 255);
-        }
-    }
-}
-
-void nextMainScreenDisplayMode() {
-    uBit.display.clear();
-    switch (displayMainScreenMode) {
-        case GRAPHS:
-            displayMainScreenMode = BATTERY;
-            break;
-        case BATTERY:
-            displayMainScreenMode = OFF;
-            break;
-        case OFF:
-            displayMainScreenMode = GRAPHS;
-            break;
-    }
-}
-
-void mainScreen() {
-    bool bDelayElapsed = (uBit.systemTime() - tmpTimer) > 1000;
-    if (bDelayElapsed) { tmpTimer = uBit.systemTime(); }
-
-    if (bConnected) {
-        if (bDelayElapsed) {
-            uart->send(ManagedString("B:") + ManagedString(batteryMilliVolt));
-        }
-    } else {
-        if (bDelayElapsed) {
-            bBLEIndicator = !bBLEIndicator;
-            uBit.display.clear();
-            if (bBLEIndicator) {
-                MicroBitImage img(bluetoothSymbol);
-                uBit.display.print(img);
-            } else {
-                // Need to actually see this to know if I want to flash only
-                // blank screen or with battery.
-                //batteryLevelFullScreen();
-            }
-        }
-        return;
-    }
-
-    switch (displayMainScreenMode) {
-        case OFF:
-            break;
-        case BATTERY:
-            uBit.display.clear();
-            batteryLevelFullScreen();
-            break;
-        case GRAPHS:
-        default:
-            uBit.display.clear();
-            if (batteryMilliVolt > 100) {
-                if (controller.Arm()) {
-                    plotYLine(0, (((batteryMilliVolt - 3400) * 4) / 500), 4);
-                } else {
-                    plotYLine(0, (((batteryMilliVolt - 3700) * 4) / 500), 4);
-                }
-            }
-            break;
-    }
-}
-
 void onButtonA_press(MicroBitEvent e) {
-    nextMainScreenDisplayMode();
+    hoverBitDisplay.nextMode();
 }
+
 void onButtonB_press(MicroBitEvent e) {
 }
+
 void onButtonAB_press(MicroBitEvent e) {
-    DisplayMainScreenMode tmpDMode = displayMainScreenMode;
-    displayMainScreenMode = OFF;
+    hoverBitDisplay.pause();
     uBit.display.scroll(VERSION);
-    displayMainScreenMode = tmpDMode;
+    hoverBitDisplay.pause(false);
 }
 
 int main() {
     uBit.init();
     uBit.audio.setVolume(255);
-    tmpTimer = uBit.systemTime();
 
     // Setup serial for Spektsat communication with air:bit board
     uBit.serial.setBaud(115200);
@@ -273,30 +141,21 @@ int main() {
     // Note GATT table size increased from default in MicroBitConfig.h
     // #define MICROBIT_SD_GATT_TABLE_SIZE             0x500
     uart = new MicroBitUARTService(*uBit.ble, 32, 32);
-    uart->eventOn(BLE_UART_DELIM); 
+    uart->eventOn(BLE_UART_DELIM);
 
     uBit.audio.soundExpressions.play(ManagedString("hello"));
 
     while (1) {
-        batteryMilliVolt = controller.GetBatteryVoltage();
-
         if (uBit.logo.isPressed()) {
             if (!bCapLogoIsPressed) {
                 bCapLogoIsPressed = true;
-                nextMainScreenDisplayMode();
+                hoverBitDisplay.nextMode();
             }
-        } else if (bCapLogoIsPressed ){
+        } else if (bCapLogoIsPressed) {
             bCapLogoIsPressed = false;
         }
 
-        if ((((&uBit.io.P0)->getAnalogValue()) < 600) && (((&uBit.io.P0)->getAnalogValue()) >= 400)) {
-            iconBatteryCharging();
-        } else if (controller.BatteryEmpty() || (batteryMilliVolt < BATTERY_LOW_LIMIT && (&uBit.io.P0)->getAnalogValue() > 300)) {
-            lowBattery();
-        } else {
-            mainScreen();
-        }
-
+        hoverBitDisplay.update();
         controller.HoverControl();
         uBit.sleep(20);
     }
