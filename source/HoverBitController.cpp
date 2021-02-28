@@ -32,7 +32,7 @@ DEALINGS IN THE SOFTWARE.
  */
 void HoverBitController::init() {
     mainController = false;
-    batteryEmpty   = false;
+    bBatteryEmpty   = false;
     batteryMilliVolt = 3700;
     batteryFactor   = 4.42;
 
@@ -79,6 +79,18 @@ unsigned int HoverBitController::GetBatteryVoltage() {
     float batteryFactor = 4.42;
     int batteryMilliVolt = 3700;
     return ((float)((&uBit.io.P0)->getAnalogValue()) * batteryFactor * 0.05) + ((float)batteryMilliVolt * 0.95);
+}
+
+/**
+ * Check wether battery level is too low.
+ */
+void HoverBitController::checkBattery() {
+    if (GetBatteryVoltage() < BATTERY_LOW_LIMIT - 60) {
+        bBatteryEmpty = true;
+        Throttle(0);
+        Arm(0);
+        Rudder(0);
+    }
 }
 
 /**
@@ -148,6 +160,10 @@ void HoverBitController::AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,
  * Method that sends commands with the current values for all parameters.
  */
 void HoverBitController::HoverControl() {
+    checkBattery();
+    if (BatteryEmpty()) {
+        Arm(0);
+    }
     if (!failSafe()) {
         AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
     }
@@ -181,5 +197,6 @@ void HoverBitController::Arm(bool _arm) {
     lastReceiveTime = uBit.systemTime();
 }
 bool HoverBitController::BatteryEmpty() {
-    return batteryEmpty;
+    checkBattery();
+    return bBatteryEmpty;
 }

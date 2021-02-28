@@ -51,11 +51,12 @@ class HoverBitController {
         unsigned long lastReceiveTime;
 
         bool mainController;
-        bool batteryEmpty;
+        bool bBatteryEmpty;
         int batteryMilliVolt;
         float batteryFactor;
 
         bool failSafe(void);
+        void checkBattery();
         void AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,int Aux1,int Aux2);
 
     public:
