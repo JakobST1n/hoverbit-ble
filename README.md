@@ -1,13 +1,15 @@
 # HOVER:BIT Bluetooth Controller software
 This is software for controlling the HOVER:BIT kit with a progressive web app.
 
-The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](http://jakobst1n.github.io/hoverbit-ble/). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site. 
+The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/tree/controller) branch, you can access it [here](http://jakobst1n.github.io/hoverbit-ble/). It works the best if you install it on your device, usually you should get a prompt to install it when accessing the site.
 
-Only tested on __Google Chrome__! Will __NOT__ work on Safari (as apple doesn't allow web bluetooth). I have not tested on IOS, but it should work with chrome there as well.
+> Only tested on __Google Chrome__! Will __NOT__ work on Safari (as apple doesn't allow web bluetooth). I have not tested on IOS, but it should work with chrome there as well.
+
+The Micro:bit code for this project is not the most efficient, I have instead written in a object-oriented way instead. This is to make the code as readable and understandable as possible for more people.
 
 ## Usage
 ### Flashing the micro:bit
-Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/latest) from Releases, and flash your micro:bit with this file. 
+Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/latest) from Releases, and flash your micro:bit with this file.
 To do this, plug the micro:bit into your computer. The micro:bit will then appear as a removable flash drive, then simply copy (drag-drop)
 the hex-file into the flash-drive folder.
 
@@ -38,3 +40,4 @@ Take a look at [active issues](https://github.com/JakobST1n/hoverbit-ble/issues)
 ## Credits
 - The [micro:bit Web Bluetooth](https://github.com/thegecko/microbit-web-bluetooth) library is used by the webapp for bluetooth communication with the MICRO:BIT.
 - Joysticks on webapp is from the [nipplejs](https://yoannmoi.net/nipplejs/) library.
+- [micro:bit V2 Runtime (Docs)](https://rneacy.dev/mbv2/ble/)
