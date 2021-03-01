@@ -5,7 +5,7 @@ The web app lives in the [controller](https://github.com/JakobST1n/hoverbit-ble/
 
 > Only tested on __Google Chrome__! Will __NOT__ work on Safari (as apple doesn't allow web bluetooth). I have not tested on IOS, but it should work with chrome there as well.
 
-The Micro:bit code for this project is not the most efficient, I have instead written in a object-oriented way instead. This is to make the code as readable and understandable as possible for more people.
+The Micro:bit code for this project is not the most efficient, object oriented and readable code is highly prioritized instead.
 
 ## Usage
 ### Flashing the micro:bit
