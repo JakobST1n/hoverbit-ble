@@ -43,6 +43,7 @@ sbeParseJson(codal codal_json)
 
 set(CODAL_APP_OUTPUT_DIR ".")
 set(CODAL_APP_SOURCE_DIR "source")
+set(CODAL_APP_INCLUDE_DIR "inc")
 
 if("${codal.application}" STRGREATER "")
     set(CODAL_APP_SOURCE_DIR "${codal.application}")
@@ -80,17 +81,6 @@ SET(CODAL_TARGET_NAME ${device.target.name})
 SET(CODAL_OUTPUT_NAME ${device.device})
 SET(CODAL_TARGET_PROCESSOR ${device.processor})
 SET(CODAL_TARGET_CPU_ARCHITECTURE ${device.architecture})
-
-# if this is the first build, lets copy a sample main.cpp from the target if available.
-if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/${CODAL_APP_SOURCE_DIR} AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/${LIB_DEST}/${codal.target.name}/samples/main.cpp)
-    FILE(COPY ${CMAKE_CURRENT_LIST_DIR}/${LIB_DEST}/${codal.target.name}/samples/main.cpp DESTINATION ${CMAKE_CURRENT_LIST_DIR}/${CODAL_APP_SOURCE_DIR})
-endif()
-
-#copy samples and remove main.cpp
-if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/samples AND EXISTS ${CMAKE_CURRENT_LIST_DIR}/${LIB_DEST}/${codal.target.name}/samples/)
-    FILE(COPY ${CMAKE_CURRENT_LIST_DIR}/${LIB_DEST}/${codal.target.name}/samples DESTINATION ${CMAKE_CURRENT_LIST_DIR})
-    FILE(REMOVE ${CMAKE_CURRENT_LIST_DIR}/samples/main.cpp)
-endif()
 
 ####################
 
@@ -231,7 +221,7 @@ if("${device.libraries}" STRGREATER "")
 endif()
 
 #finally, find sources and includes of the application, and create a target.
-RECURSIVE_FIND_DIR(INCLUDE_DIRS "./inc" "${PROJECT_SOURCE_DIR}/${CODAL_APP_SOURCE_DIR}" "*.h")
+RECURSIVE_FIND_DIR(INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/${CODAL_APP_INCLUDE_DIR}" "*.h")
 # *.c?? only catches .cpp, not .c, so let's be precise
 RECURSIVE_FIND_FILE(SOURCE_FILES "${PROJECT_SOURCE_DIR}/${CODAL_APP_SOURCE_DIR}" "*.cpp")
 

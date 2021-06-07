@@ -22,19 +22,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
-#include <MicroBit.h>
 #include "HoverBitController.h"
 
 /**
  * Init method for HoverBitController, this sets everything to the default values.
  * It also initializes the airbit-pcb with some protocol magic.
- *
- * @param _uBit the MicroBit instance
  */
-void HoverBitController::init(MicroBit* _uBit) {
-    uBit = _uBit;
+void HoverBitController::init() {
     mainController = false;
-    batteryEmpty   = false;
+    bBatteryEmpty   = false;
     batteryMilliVolt = 3700;
     batteryFactor   = 4.42;
 
@@ -44,37 +40,54 @@ void HoverBitController::init(MicroBit* _uBit) {
     roll = 0;
     yaw = 0;
     throttle = 0;
-    failSafeC = 0;
+    lastReceiveTime = uBit.systemTime();
 
-    /* I am not completly sure what this does, but it seems to me like this is
-       putting the air:bit board in some kind of "bind-mode", on the spec-sheet
-       there isn't any documentation for what 20 pulses means tho... */
-    (*uBit).sleep(100);
+    /* I am not completly sure what this does, according to the hover:bit guys
+       this is some magic to disable gyro-control of the lift fan. */
+    uBit.sleep(100);
     int o;
     for (o = 0; o < 20; o++) {
         AirBit(-90, 0, 90, 0, 90, 0, 0);
-        (*uBit).sleep(20);
+        uBit.sleep(20);
     }
 }
 
 /**
  * This is not implemented yet.
  */
-void HoverBitController::failSafe(void) {
-    // throttle = 0;
-    // roll = 0;
-    // yaw = 0;
-    // arm = 0;
-    // failSafeC++;
+bool HoverBitController::failSafe(void) {
+    unsigned long deltaReceiveTime = uBit.systemTime() - lastReceiveTime;
+    if (deltaReceiveTime > FSAFE_TLIM_ARM) {
+        arm = 0;
+        AirBit(0, 0, 0, 0, 0, 0 + 45, servo_1);
+    }
+    if (deltaReceiveTime > FSAFE_TLIM_THROTTLE) {
+        throttle = 0;
+        roll = 0;
+        AirBit(0, arm, 0, 0, 0, 0 + 45, servo_1);
+    }
+    return (deltaReceiveTime > FSAFE_TLIM_THROTTLE) || (deltaReceiveTime > FSAFE_TLIM_ARM);
 }
 
 /**
  * This returns the current voltage of the battery.
  */
-unsigned int HoverBitController::getBatteryVoltage() {
+unsigned int HoverBitController::GetBatteryVoltage() {
     float batteryFactor = 4.42;
     int batteryMilliVolt = 3700;
-    return ((float)((&(*uBit).io.P0)->getAnalogValue()) * batteryFactor * 0.05) + ((float)batteryMilliVolt * 0.95);
+    return ((float)((&uBit.io.P0)->getAnalogValue()) * batteryFactor * 0.05) + ((float)batteryMilliVolt * 0.95);
+}
+
+/**
+ * Check wether battery level is too low.
+ */
+void HoverBitController::checkBattery() {
+    if (GetBatteryVoltage() < BATTERY_LOW_LIMIT - 60) {
+        bBatteryEmpty = true;
+        throttle = 0;
+        arm = 0;
+        roll = 0;
+    }
 }
 
 /**
@@ -137,14 +150,20 @@ void HoverBitController::AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,
     buf[13] = aux1S & 255;
     buf[14] = (6 << 2) | ((aux2S >> 8) & 3);
     buf[15] = aux2S & 255;
-    (*uBit).serial.send(buf, 16, SYNC_SPINWAIT);
+    uBit.serial.send(buf, 16, SYNC_SPINWAIT);
 }
 
 /**
  * Method that sends commands with the current values for all parameters.
  */
 void HoverBitController::HoverControl() {
-    AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
+    checkBattery();
+    if (BatteryEmpty()) {
+        arm = 0;
+    }
+    if (!failSafe()) {
+        AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
+    }
 }
 
 int HoverBitController::Throttle() {
@@ -154,29 +173,27 @@ void HoverBitController::Throttle(int _throttle) {
     if      (_throttle > 99) { throttle = 100; }
     else if (_throttle <  0) { throttle =   0; }
     else { throttle = _throttle; }
+    lastReceiveTime = uBit.systemTime();
 }
-int HoverBitController::Servo1() {
-    return servo_1;
-}
-void HoverBitController::Servo1(int _servo1) {
-    if      (_servo1 > 180) { servo_1 = 180; }
-    else if (_servo1 <   0) { servo_1 =   0; }
-    else { servo_1 = _servo1; }
-}
-int HoverBitController::Roll() {
+int HoverBitController::Rudder() {
+    // The AirBit uses the roll parameter to control the hoverbit's rudder.
     return roll;
 }
-void HoverBitController::Roll(int _roll) {
-    if      (_roll >   90) { roll =  90; }
-    else if (_roll <  -90) { roll = -90; }
-    else    { roll = _roll; }
+void HoverBitController::Rudder(int _rudder) {
+    // The AirBit uses the roll parameter to control the hoverbit's rudder.
+    if      (_rudder >   90) { roll =  90; }
+    else if (_rudder <  -90) { roll = -90; }
+    else    { roll = _rudder; }
+    lastReceiveTime = uBit.systemTime();
 }
 bool HoverBitController::Arm() {
     return (arm == 1);
 }
 void HoverBitController::Arm(bool _arm) {
     arm = (int)_arm;
+    lastReceiveTime = uBit.systemTime();
 }
 bool HoverBitController::BatteryEmpty() {
-    return batteryEmpty;
+    checkBattery();
+    return bBatteryEmpty;
 }
