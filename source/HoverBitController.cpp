@@ -27,8 +27,6 @@ DEALINGS IN THE SOFTWARE.
 /**
  * Init method for HoverBitController, this sets everything to the default values.
  * It also initializes the airbit-pcb with some protocol magic.
- *
- * @param _uBit the MicroBit instance
  */
 void HoverBitController::init() {
     mainController = false;
@@ -44,9 +42,8 @@ void HoverBitController::init() {
     throttle = 0;
     lastReceiveTime = uBit.systemTime();
 
-    /* I am not completly sure what this does, but it seems to me like this is
-       putting the air:bit board in some kind of "bind-mode", on the spec-sheet
-       there isn't any documentation for what 20 pulses means tho... */
+    /* I am not completly sure what this does, according to the hover:bit guys
+       this is some magic to disable gyro-control of the lift fan. */
     uBit.sleep(100);
     int o;
     for (o = 0; o < 20; o++) {
@@ -60,14 +57,14 @@ void HoverBitController::init() {
  */
 bool HoverBitController::failSafe(void) {
     unsigned long deltaReceiveTime = uBit.systemTime() - lastReceiveTime;
-    if (deltaReceiveTime > FSAFE_TLIM_THROTTLE) {
-        Throttle(0);
-        Rudder(0);
-        AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
-    }
     if (deltaReceiveTime > FSAFE_TLIM_ARM) {
-        Arm(0);
-        AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);
+        arm = 0;
+        AirBit(0, 0, 0, 0, 0, 0 + 45, servo_1);
+    }
+    if (deltaReceiveTime > FSAFE_TLIM_THROTTLE) {
+        throttle = 0;
+        roll = 0;
+        AirBit(0, arm, 0, 0, 0, 0 + 45, servo_1);
     }
     return (deltaReceiveTime > FSAFE_TLIM_THROTTLE) || (deltaReceiveTime > FSAFE_TLIM_ARM);
 }
@@ -87,9 +84,9 @@ unsigned int HoverBitController::GetBatteryVoltage() {
 void HoverBitController::checkBattery() {
     if (GetBatteryVoltage() < BATTERY_LOW_LIMIT - 60) {
         bBatteryEmpty = true;
-        Throttle(0);
-        Arm(0);
-        Rudder(0);
+        throttle = 0;
+        arm = 0;
+        roll = 0;
     }
 }
 
@@ -162,7 +159,7 @@ void HoverBitController::AirBit(int Pitch,int Arm,int Roll,int Throttle,int Yaw,
 void HoverBitController::HoverControl() {
     checkBattery();
     if (BatteryEmpty()) {
-        Arm(0);
+        arm = 0;
     }
     if (!failSafe()) {
         AirBit(0, arm, 0, throttle, roll, roll + 45, servo_1);

@@ -52,6 +52,7 @@ void onDisconnected(MicroBitEvent) {
 
 void onDelim(MicroBitEvent) {
     ManagedString msg = uart->readUntil(BLE_UART_DELIM);
+    uBit.display.image.setPixelValue(1, 0, 255);
 
     int length = msg.length();
     const char* command = msg.toCharArray();
@@ -120,13 +121,6 @@ void onDelim(MicroBitEvent) {
     uart->send(accString);
 }
 
-void onButtonA_press(MicroBitEvent e) {
-    hoverBitDisplay.nextMode();
-}
-
-void onButtonB_press(MicroBitEvent e) {
-}
-
 void onButtonAB_press(MicroBitEvent e) {
     hoverBitDisplay.pause();
     uBit.display.scroll(VERSION);
@@ -135,14 +129,15 @@ void onButtonAB_press(MicroBitEvent e) {
 
 int main() {
     uBit.init();
-    uBit.audio.setVolume(255);
 
     // Setup serial for Spektsat communication with air:bit board
     uBit.serial.setBaud(115200);
     uBit.serial.redirect(uBit.io.P1, uBit.io.P2);
 
-    /* Initialize hover:bit controller module
-     * the init procedure have to be run within 100ms after air:bit power up */
+    /* Initialize hover:bit controller module, these timeouts are some voodo 
+       magic I don't quite understand. But for the init method to function
+       as we want, there should be a relatively long delay here. */
+    uBit.sleep(3000);
     controller.init();
 
     // Setup listeners
@@ -150,8 +145,6 @@ int main() {
     uBit.messageBus.listen(MICROBIT_ID_BLE, MICROBIT_BLE_EVT_DISCONNECTED, onDisconnected);
     uBit.messageBus.listen(MICROBIT_ID_BLE_UART, MICROBIT_UART_S_EVT_DELIM_MATCH, onDelim);
 
-    uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK, onButtonA_press);
-    uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_BUTTON_EVT_CLICK, onButtonB_press);
     uBit.messageBus.listen(MICROBIT_ID_BUTTON_AB, MICROBIT_BUTTON_EVT_CLICK, onButtonAB_press);
 
     // uartService
@@ -160,21 +153,21 @@ int main() {
     uart = new MicroBitUARTService(*uBit.ble, 32, 32);
     uart->eventOn(BLE_UART_DELIM);
 
+    uBit.audio.setVolume(20);
     uBit.audio.soundExpressions.play(ManagedString("hello"));
+    hoverBitDisplay.mode(GRAPHS);
 
     while (1) {
-        if (uBit.logo.isPressed()) {
-            if (!bCapLogoIsPressed) {
-                bCapLogoIsPressed = true;
-                hoverBitDisplay.nextMode();
-            }
-        } else if (bCapLogoIsPressed) {
-            bCapLogoIsPressed = false;
-        }
-
         hoverBitDisplay.update();
         controller.HoverControl();
+        if (uBit.systemTime() % 2000 > 1900) {
+            uart->send(
+                ManagedString("B:")
+                + ManagedString((int)controller.GetBatteryVoltage())
+            );
+        }
         uBit.sleep(20);
+        schedule();
     }
 
     // If main exits, there may still be other fibers running or registered event handlers etc.

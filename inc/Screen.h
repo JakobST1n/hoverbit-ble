@@ -83,8 +83,6 @@ class HoverBitDisplay {
         DisplayMainScreenMode screenMode;
         unsigned int tmpTimer;
         bool BLEconnected;
-        bool bBLEIndicator;
-        bool flipFrame;
         bool isPause;
 
         void lowBattery();

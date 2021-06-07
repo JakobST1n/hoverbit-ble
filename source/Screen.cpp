@@ -179,9 +179,6 @@ void HoverBitDisplay::update() {
     if (isPause) { return; }
     int batteryMilliVolt = controller.GetBatteryVoltage();
 
-    flipFrame = (uBit.systemTime() - tmpTimer) > 1000;
-    if (flipFrame) { tmpTimer = uBit.systemTime(); }
-
     if ((((&uBit.io.P0)->getAnalogValue()) < 600) && (((&uBit.io.P0)->getAnalogValue()) >= 400)) {
         iconBatteryCharging();
     } else if (controller.BatteryEmpty() || (batteryMilliVolt < BATTERY_LOW_LIMIT && (&uBit.io.P0)->getAnalogValue() > 300)) {
@@ -189,7 +186,7 @@ void HoverBitDisplay::update() {
     } else if (!BLEconnected) {
         BLENotConnected();
     } else {
-        mainScreen();
+        showGraphs();
     }
 }
 
@@ -211,37 +208,12 @@ void HoverBitDisplay::lowBattery() {
  * Flashes a bluetooth symbol on screen.
  */
 void HoverBitDisplay::BLENotConnected() {
-    if ((((uBit.systemTime() >> (12 - 1) & 1)) == 1)) {
-        bBLEIndicator = !bBLEIndicator;
+    if (uBit.systemTime() % 1000 > 250) {
+        MicroBitImage img(bluetoothSymbol);
+        uBit.display.print(img);
+    } else {
         uBit.display.clear();
-        if (bBLEIndicator) {
-            MicroBitImage img(bluetoothSymbol);
-            uBit.display.print(img);
-        } else {
-            // Need to actually see this to know if I want to flash only
-            // blank screen or with battery.
-            //batteryLevelFullScreen();
-        }
     }
-}
-
-/**
- * Method that does the "default" main screen mode.
- * Called when in a connected "normal" operating state.
- */
-void HoverBitDisplay::mainScreen() {
-     switch (displayMainScreenMode) {
-         case OFF:
-             break;
-         case BATTERY:
-             uBit.display.clear();
-             batteryLevelFullScreen();
-             break;
-         case GRAPHS:
-         default:
-            showGraphs();
-            break;
-        }
 }
 
 /**
