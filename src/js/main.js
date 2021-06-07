@@ -1,6 +1,6 @@
 import nipplejs from 'nipplejs';
-import { requestMicrobit, getServices } from 'microbit-web-bluetooth';
 import hoverControlModule from './hoverControlModule';
+import uBitBLE from "./uBit";
 import { notif_alert, notif_warn, notif_info, notif_success } from './notification';
 
 let sw = "service-worker.js";
@@ -32,10 +32,13 @@ document.getElementById("btn_ignore_landscape_warning").addEventListener("click"
     document.body.classList.add("ignore-landscape-warning");
 });
 
+if (!navigator.bluetooth) {
+    alert("Bluetooth not enabled in your browser, this won't work...");
+}
+
 /* Define and initialize things */
+let ubit = new uBitBLE();
 let hoverControl = new hoverControlModule();
-let bluetoothDevice;
-let bluetoothDeviceServices;
 
 let joystickLeft = nipplejs.create({
     zone: document.querySelector(".joystick-left"),
@@ -56,7 +59,7 @@ let joystickRight = nipplejs.create({
 joystickLeft.on("move", (evt, data) => {
     let rudder = ((data.distance * 90) / 100);
     if (data.angle.degree > 90) { rudder = rudder * -1; }
-    hoverControl.setRudder(rudder);
+    hoverControl.setRudder(Math.round(rudder));
 });
 joystickLeft.on("end", (evt, data) => {
     hoverControl.setRudder(0);
@@ -74,7 +77,7 @@ joystickRight.on("move", (evt, data) => {
             }
         }
     }
-    hoverControl.setThrottle(throttle);
+    hoverControl.setThrottle(Math.round(throttle));
 });
 joystickRight.on("end", (evt, data) => {
     hoverControl.setThrottle(0);
@@ -90,45 +93,31 @@ document.getElementById("btn_disarm").addEventListener("click", () => {
 
 document.querySelector("#btn_disconnect").addEventListener("click", () => {
     hoverControl.reset();
-    bluetoothDevice.gatt.disconnect();
+    ubit.disconnect();
 });
 
-let intervalConnectionChecker = setInterval(() => {
-    if (bluetoothDevice !== undefined && bluetoothDevice) {
-        if (bluetoothDevice.gatt.connected) {
-            document.body.classList.add("connected");
-        } else {
-            document.body.classList.remove("connected");
-            document.body.classList.remove("armed");
-        }
-    } else if (bluetoothDevice !== undefined) {
-        bluetoothDevice.gatt.reconnect();
-    }
-}, 500);
+document.getElementById("btn_connect").addEventListener("click", () => {
+    ubit.searchDevice();
+});
 
-let intervalSendCommands = setInterval(async() => {
-    if (bluetoothDevice !== undefined && bluetoothDevice) {
-        if (bluetoothDevice.gatt.connected && bluetoothDeviceServices.uartService) {
-            let command =
-                "T" + hoverControl.getThrottle().toString() +
-                "R" + hoverControl.getRudder().toString() +
-                "A" + (hoverControl.getArm() ? "1" : "0") +
-                "S0" +
-                ":";
-            await bluetoothDeviceServices.uartService.sendText(command);
-        }
-    }
-}, 70);
+ubit.onConnect(() => {
+    document.body.classList.add("connected");
+});
 
-function receiveText(event) {
+ubit.onDisconnect(() => {
+    document.body.classList.remove("connected");
+    document.body.classList.remove("armed");
+});
+
+ubit.onUartTx((text) => {
     /* Just make the ping symbol reappear. */
     var elm = document.querySelector(".ping i");
     var newone = elm.cloneNode(true);
     elm.parentNode.replaceChild(newone, elm);
 
     /* Actually handle received text. */
-    if ((event.detail).indexOf(":") != -1) {
-        let parts = (event.detail).split(":");
+    if ((text).indexOf(":") != -1) {
+        let parts = (text).split(":");
 
         if (parts[0] == "B") {
             document.querySelector(".battery-status").innerHTML = parts[1] + "mV";
@@ -139,29 +128,19 @@ function receiveText(event) {
         }
     } else {
         notif_warn("Received weird data from MICRO:BIT...");
-        console.log(`Received unknown: ${event.detail}`);
+        console.log(`Received unknown: ${text}`);
     }
-}
+});
 
-document.getElementById("btn_connect").onclick = async () => {
-    if (bluetoothDevice !== undefined && bluetoothDevice.gatt.connected) {
-        bluetoothDevice.disconnect();
+let intervalSendCommands = setInterval(async() => {
+    if (ubit.isConnected()) {
+        let command =
+            "T" + hoverControl.getThrottle().toString() +
+            "R" + hoverControl.getRudder().toString() +
+            "A" + (hoverControl.getArm() ? "1" : "0") +
+            "S0" +
+            ":";
+        await ubit.sendUart(command);
     }
+}, 100);
 
-    const device = await requestMicrobit(window.navigator.bluetooth);
-    bluetoothDevice = device;
-
-    if (device) {
-        hoverControl.reset();
-        const services = await getServices(device);
-        bluetoothDeviceServices = services;
-
-        if (bluetoothDeviceServices.deviceInformationService) {
-            // logJson(await services.deviceInformationService.readDeviceInformation());
-        }
-
-        if (services.uartService) {
-            services.uartService.addEventListener("receiveText", receiveText);
-        }
-    }
-}

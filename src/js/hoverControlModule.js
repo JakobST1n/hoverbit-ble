@@ -1,5 +1,7 @@
 import { notif_alert, notif_warn, notif_info, notif_success } from './notification';
 
+let n = 0;
+
 export default class hoverControlModule {
     #throttle = 0;
     #throttleAcc = 0;
@@ -33,7 +35,8 @@ export default class hoverControlModule {
                     console.log(`Unkown acc: ${item}`);
             }
         });
-        document.querySelector(".acc-string pre").innerHTML = `T: ${this.#throttleAcc}, R: ${this.#rudderAcc}`;
+        document.querySelector(".acc-string pre").innerHTML = `T: ${this.#throttleAcc}, R: ${this.#rudderAcc}, ${n}`;
+        n++;
     }
 
     reset() {

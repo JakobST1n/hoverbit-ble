@@ -148,6 +148,13 @@ body {
     .connected & { display: block; }
 }
 
+button:hover {
+    filter: brightness(80%);
+}
+button:active {
+    filter: brightness(70%);
+}
+
 .button-center {
     position: absolute;
     display: none;
