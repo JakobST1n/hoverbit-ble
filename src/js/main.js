@@ -39,6 +39,8 @@ if (!navigator.bluetooth) {
 /* Define and initialize things */
 let ubit = new uBitBLE();
 let hoverControl = new hoverControlModule();
+window.ubit = ubit;
+window.hoverControl = hoverControl;
 
 let joystickLeft = nipplejs.create({
     zone: document.querySelector(".joystick-left"),
@@ -116,6 +118,7 @@ ubit.onUartTx((text) => {
     elm.parentNode.replaceChild(newone, elm);
 
     /* Actually handle received text. */
+    // console.log(`Received: ${text}`);
     if ((text).indexOf(":") != -1) {
         let parts = (text).split(":");
 
@@ -141,6 +144,6 @@ let intervalSendCommands = setInterval(async() => {
             "S0" +
             ":";
         await ubit.sendUart(command);
+        // console.log(`Sent: ${command}`);
     }
 }, 100);
-

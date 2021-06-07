@@ -58,7 +58,7 @@ tput sgr0
 
 git checkout controller
 
-git tag "v$VERSION"
+#git tag "v$VERSION"
 
 git push -f origin controller
 #git push origin "v$VERSION"
