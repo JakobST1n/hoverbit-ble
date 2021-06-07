@@ -24,10 +24,6 @@ VERSION=$(cat package.json \
   | sed 's/[",]//g' \
   | tr -d '[[:space:]]')
 
-echo "Deploying for tag: $VERSION."
-git add package.json package-lock.json
-git commit --amend --no-edit
-
 tput setaf 4
 echo "> Build app"
 tput sgr0
@@ -35,6 +31,12 @@ tput sgr0
 rm -r dist/
 npm install
 npm run build
+
+tput setaf 4
+echo "Deploying for tag: $VERSION."
+tput sgr0
+git add package.json package-lock.json
+git commit --amend --no-edit
 
 tput setaf 4
 echo "> Copy to gh-pages branch and commit"
