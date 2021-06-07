@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 #include "HoverBitController.h"
 #include "Screen.h"
 
-#define VERSION "0.0.1"
+#define VERSION "1.0.0"
 #define BLE_UART_DELIM ":"
 
 MicroBit uBit;
