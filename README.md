@@ -15,7 +15,7 @@ the hex-file into the flash-drive folder.
 
 ### Controlling the hover:bit
 Navigate to [the progressive web app](https://jakobst1n.github.io/hoverbit-ble/) on a phone, and press connect.
-Press `arm` when you are connected, then you can use the throttle on the right, and rudder on the bottom to controll
+Press `arm` when you are connected, then you can use the throttle on the right, and rudder on the left to controll
 the hover:bit.
 
 ## Compiling the hex-file yourself
@@ -38,6 +38,5 @@ There is no connection between the version of the app and the version of the MIC
 Take a look at [active issues](https://github.com/JakobST1n/hoverbit-ble/issues). Submit a issue there if find any problems.
 
 ## Credits
-- The [micro:bit Web Bluetooth](https://github.com/thegecko/microbit-web-bluetooth) library is used by the webapp for bluetooth communication with the MICRO:BIT.
 - Joysticks on webapp is from the [nipplejs](https://yoannmoi.net/nipplejs/) library.
 - [micro:bit V2 Runtime (Docs)](https://rneacy.dev/mbv2/ble/)
