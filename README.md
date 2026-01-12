@@ -13,6 +13,10 @@ Get the last [hex file](https://github.com/JakobST1n/hoverbit-ble/releases/lates
 To do this, plug the micro:bit into your computer. The micro:bit will then appear as a removable flash drive, then simply copy (drag-drop)
 the hex-file into the flash-drive folder.
 
+#### Hover:bit v2
+If you have the updated hover:bit v2, see this person who has made make:code for this web-app, instead of the hex-code mentioned previously: [Hoverbit V2 Bluetooth-ble](https://github.com/paynor/hoverbit-v2_bluetooth-ble.). I have not tested this personally, but it presumably works quite well. 
+To make this work, they also made a modified version of the [hoverbit make:code-library](https://github.com/paynor/Hoverbit_V2-fork_bluetooth-test), that disables rf in favour of bluetooth.
+
 ### Controlling the hover:bit
 Navigate to [the progressive web app](https://jakobst1n.github.io/hoverbit-ble/) on a phone, and press connect.
 Press `arm` when you are connected, then you can use the throttle on the right, and rudder on the left to controll
